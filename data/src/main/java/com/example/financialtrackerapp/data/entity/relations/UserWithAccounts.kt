@@ -12,7 +12,11 @@ data class UserWithAccounts(
     @Relation(
         parentColumn = "id",
         entityColumn = "id",
-        associateBy = Junction(AccountUserCrossRef::class)
+        associateBy = Junction(
+            AccountUserCrossRef::class,
+            parentColumn = "userId",
+            entityColumn = "accountId"
+        )
     )
     val accounts: List<AccountEntity>
 )

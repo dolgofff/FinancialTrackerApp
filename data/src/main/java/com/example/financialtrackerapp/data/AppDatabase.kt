@@ -21,7 +21,7 @@ import com.example.financialtrackerapp.data.entity.UserEntity
 @Database(
     entities = [AccountEntity::class, AccountUserCrossRef::class, AdviceEntity::class, AimEntity::class,
         BudgetEntity::class, TransactionEntity::class, UserEntity::class],
-    version = 1, exportSchema = false
+    version = 3, exportSchema = false
 )
 abstract class AppDatabase : RoomDatabase() {
 
@@ -42,7 +42,7 @@ abstract class AppDatabase : RoomDatabase() {
                     context.applicationContext,
                     AppDatabase::class.java,
                     "ft_database"
-                ).build()
+                ).fallbackToDestructiveMigration().build()
 
                 INSTANCE = instance
 

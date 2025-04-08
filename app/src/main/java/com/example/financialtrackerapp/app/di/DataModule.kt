@@ -11,13 +11,17 @@ import com.example.financialtrackerapp.data.dao.UserDao
 import com.example.financialtrackerapp.data.repository.AccountRepositoryImpl
 import com.example.financialtrackerapp.data.repository.AdviceRepositoryImpl
 import com.example.financialtrackerapp.data.repository.AimRepositoryImpl
+import com.example.financialtrackerapp.data.repository.AuthRepositoryImpl
 import com.example.financialtrackerapp.data.repository.BudgetRepositoryImpl
+import com.example.financialtrackerapp.data.repository.GlobalRepositoryImpl
 import com.example.financialtrackerapp.data.repository.TransactionRepositoryImpl
 import com.example.financialtrackerapp.data.repository.UserRepositoryImpl
 import com.example.financialtrackerapp.domain.repository.AccountRepository
 import com.example.financialtrackerapp.domain.repository.AdviceRepository
 import com.example.financialtrackerapp.domain.repository.AimRepository
+import com.example.financialtrackerapp.domain.repository.AuthRepository
 import com.example.financialtrackerapp.domain.repository.BudgetRepository
+import com.example.financialtrackerapp.domain.repository.GlobalRepository
 import com.example.financialtrackerapp.domain.repository.TransactionRepository
 import com.example.financialtrackerapp.domain.repository.UserRepository
 import dagger.Module
@@ -34,6 +38,18 @@ object DataModule {
     @Singleton
     fun provideDatabase(@ApplicationContext context: Context): AppDatabase {
         return AppDatabase.getDatabase(context)
+    }
+
+    @Provides
+    @Singleton
+    fun provideAuthRepository(@ApplicationContext context: Context): AuthRepository {
+        return AuthRepositoryImpl(context)
+    }
+
+    @Provides
+    @Singleton
+    fun provideGlobalRepository(@ApplicationContext context: Context): GlobalRepository {
+        return GlobalRepositoryImpl(context)
     }
 
     @Provides
@@ -95,5 +111,4 @@ object DataModule {
     fun provideUserRepository(userDao: UserDao): UserRepository {
         return UserRepositoryImpl(userDao)
     }
-
 }

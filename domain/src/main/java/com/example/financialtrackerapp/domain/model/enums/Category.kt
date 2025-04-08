@@ -1,5 +1,32 @@
 package com.example.financialtrackerapp.domain.model.enums
 
 enum class Category {
+    HOUSEHOLD_GOODS,
+    PROPERTY_RENT,
+    EATING_OUTS,
+    PUBLIC_TRANSPORT,
+    PRESENTS,
+    TAXI,
+    SUBSCRIPTIONS,
+    BEAUTY_GOODS,
+    CLOTHES,
+    TRAVELINGS,
     EMPTY_CATEGORY,
+    PETS,
+    FINES,
+    TAXES,
+    CHARITY,
+    RANDOM_SPENDING,
+    COMMUNICATION_SERVICES,
+    MEDICINE,
+    PRODUCTS,
+    ENTERTAINMENTS,
+    DEVICES,
+    ALL_EXPENSES,
+    SALARY,
+    INVESTMENTS_INCOME,
+    PART_TIME_JOBS,
+    GIFTED_INCOME
+
+
 }
