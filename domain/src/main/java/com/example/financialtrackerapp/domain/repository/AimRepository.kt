@@ -4,8 +4,10 @@ import com.example.financialtrackerapp.domain.model.Aim
 import kotlinx.coroutines.flow.Flow
 
 interface AimRepository {
-    suspend fun insert(aim: Aim)
-    suspend fun update(aim: Aim)
-    suspend fun delete(aimId: Long)
-    fun getAimsByUserId(userId: Long): Flow<List<Aim>>
+    suspend fun insert(aim: Aim): Boolean
+    suspend fun update(aim: Aim): Boolean
+    suspend fun delete(aim: Aim): Boolean
+    suspend fun deleteById(aimId: Long): Boolean
+    suspend fun getById(aimId: Long): Aim?
+    fun getAll(accountId: Long): Flow<List<Aim>>
 }

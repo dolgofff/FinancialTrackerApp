@@ -1,0 +1,6 @@
+package com.example.financialtrackerapp.presentation.navigation.destinations
+
+import kotlinx.serialization.Serializable
+
+@Serializable
+object SplashScreenObject

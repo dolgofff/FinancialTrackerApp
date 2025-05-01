@@ -59,6 +59,10 @@ dependencies {
     //Serialization JSON dependency
     implementation(libs.kotlinx.serialization.json)
 
+    //Proto DataStore
+    implementation(libs.androidx.datastore.preferences)
+    implementation(libs.androidx.datastore)
+
     //Test dependencies
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
