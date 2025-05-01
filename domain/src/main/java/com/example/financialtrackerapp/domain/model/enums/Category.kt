@@ -27,6 +27,4 @@ enum class Category {
     INVESTMENTS_INCOME,
     PART_TIME_JOBS,
     GIFTED_INCOME
-
-
 }

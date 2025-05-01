@@ -80,6 +80,9 @@ dependencies {
     //Coroutines
     implementation(libs.kotlinx.coroutines)
 
+    //Charts
+    implementation (libs.mpandroidchart)
+
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

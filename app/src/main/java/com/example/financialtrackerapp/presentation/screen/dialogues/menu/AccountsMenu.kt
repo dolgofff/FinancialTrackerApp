@@ -51,8 +51,8 @@ fun AccountsMenu(globalViewModel: GlobalViewModel = hiltViewModel()) {
         modifier = Modifier
             .fillMaxWidth()
             .padding(
-                top = WindowInsets.statusBars.asPaddingValues().calculateTopPadding() + 8.dp,
-                start = 16.dp
+                top = WindowInsets.statusBars.asPaddingValues().calculateTopPadding(),
+                start = 10.dp
             )
             .zIndex(1f),
         contentAlignment = Alignment.TopStart
@@ -86,8 +86,8 @@ fun AccountsMenu(globalViewModel: GlobalViewModel = hiltViewModel()) {
                                 contentDescription = null,
                                 tint = Color.Unspecified,
                                 modifier = Modifier
-                                    .size(20.dp)
                                     .padding(end = 12.dp)
+                                    .size(31.dp)
                             )
                             Text(
                                 text = account.name,

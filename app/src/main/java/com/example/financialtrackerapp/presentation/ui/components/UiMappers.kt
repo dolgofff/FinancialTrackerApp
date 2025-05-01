@@ -2,13 +2,17 @@ package com.example.financialtrackerapp.presentation.ui.components
 
 import androidx.compose.ui.graphics.Color
 import com.example.financialtrackerapp.R
-import com.example.financialtrackerapp.domain.model.Transaction
 import com.example.financialtrackerapp.domain.model.enums.AccountType
 import com.example.financialtrackerapp.domain.model.enums.Category
 import com.example.financialtrackerapp.domain.model.enums.Currency
 import com.example.financialtrackerapp.domain.model.enums.TransactionType
+import com.example.financialtrackerapp.presentation.ui.theme.EthernetColor
+import com.example.financialtrackerapp.presentation.ui.theme.FinesColor
+import com.example.financialtrackerapp.presentation.ui.theme.GiftsColor
 import com.example.financialtrackerapp.presentation.ui.theme.NegativeBalance
 import com.example.financialtrackerapp.presentation.ui.theme.PositiveBalance
+import com.example.financialtrackerapp.presentation.ui.theme.SalaryColor
+import com.example.financialtrackerapp.presentation.ui.theme.ShabashkaColor
 import java.text.DecimalFormat
 import java.text.DecimalFormatSymbols
 import java.text.SimpleDateFormat
@@ -53,7 +57,7 @@ fun categoryToIcon(category: Category): Int {
         Category.PRODUCTS -> R.drawable.ics_products
         Category.ENTERTAINMENTS -> R.drawable.ics_joy
         Category.DEVICES -> R.drawable.ics_devices
-        Category.ALL_EXPENSES -> R.drawable.ics_everithing
+        Category.ALL_EXPENSES -> R.drawable.ics_everything
         Category.SALARY -> R.drawable.ics_salary
         Category.INVESTMENTS_INCOME -> R.drawable.ics_invest
         Category.PART_TIME_JOBS -> R.drawable.ics_shabashka
@@ -90,6 +94,14 @@ fun categoryToTitle(category: Category): String {
         Category.PART_TIME_JOBS -> "Part time jobs"
         Category.GIFTED_INCOME -> "Gifted money"
     }
+}
+
+fun stringToCategory(name: String): Category {
+    return Category.values().find {
+        it.name.replace("_", " ")
+            .lowercase()
+            .replaceFirstChar { c -> c.uppercase() } == name
+    } ?: Category.EMPTY_CATEGORY
 }
 
 fun accountTypeToIcon(accountType: AccountType): Int {
@@ -133,4 +145,62 @@ fun formatTransactionDate(timestamp: Long): String {
     val date = Date(timestamp)
     val dateFormat = SimpleDateFormat("EEEE, d MMMM yyyy", Locale.ENGLISH)
     return dateFormat.format(date)
+}
+
+fun parseTransactionDate(dateString: String): Long {
+    val dateFormat = SimpleDateFormat("EEEE, d MMMM yyyy", Locale.ENGLISH)
+    val date = dateFormat.parse(dateString)
+    return date?.time ?: throw IllegalArgumentException("Invalid date format: $dateString")
+}
+
+val categoryColorMap = mapOf(
+    Category.BEAUTY_GOODS to Color(0xFFFE6DA2),
+    Category.CHARITY to Color(0xFFF46DFE),
+    Category.CLOTHES to Color(0xFF12125E),
+    Category.DEVICES to Color(0xFF89C400),
+    Category.ENTERTAINMENTS to Color(0xFFFF7328),
+    Category.FINES to Color(0xFFECD947),
+    Category.GIFTED_INCOME to Color(0xFFFF7328),
+    Category.HOUSEHOLD_GOODS to Color(0xFF6D6DFE),
+    Category.INVESTMENTS_INCOME to Color(0xFF86146C),
+    Category.MEDICINE to Color(0xFFA26DFE),
+    Category.PETS to Color(0xFF37AFA7),
+    Category.PRODUCTS to Color(0xFF97A421),
+    Category.RANDOM_SPENDING to Color(0xFFDCDF27),
+    Category.PROPERTY_RENT to Color(0xFFFFBF00),
+    Category.SALARY to Color(0xFF6DFE9D),
+    Category.PART_TIME_JOBS to Color(0xFFF40004),
+    Category.SUBSCRIPTIONS to Color(0xFFFD1010),
+    Category.TAXES to Color(0xFF604420),
+    Category.TAXI to Color(0xFF6DFEDC),
+    Category.PUBLIC_TRANSPORT to Color(0xFF3932FF),
+    Category.TRAVELINGS to Color(0xFF9F0B0E),
+    Category.EATING_OUTS to Color(0xFFFE6D72),
+    Category.COMMUNICATION_SERVICES to Color(0xFF0AAF47),
+    Category.EMPTY_CATEGORY to Color(0xFF8D938F),
+    Category.ALL_EXPENSES to Color(0xFF1500FF)
+)
+
+fun indicateProgressColor(savedAmount: Double, targetAmount: Double): Color {
+    val progress = (savedAmount / targetAmount).coerceIn(0.0, 1.0)
+
+    return when {
+        progress <= 0.2 -> ShabashkaColor
+        progress <= 0.35 -> GiftsColor
+        progress <= 0.55 -> FinesColor
+        progress <= 0.75 -> SalaryColor
+        else -> EthernetColor
+    }
+}
+
+fun indicateBudgetProgressColor(spentAmount: Double, targetAmount: Double): Color {
+    val progress = (spentAmount / targetAmount).coerceIn(0.0, 1.0)
+
+    return when {
+        progress <= 0.2 -> EthernetColor
+        progress <= 0.35 -> SalaryColor
+        progress <= 0.55 -> FinesColor
+        progress <= 0.75 -> GiftsColor
+        else -> ShabashkaColor
+    }
 }

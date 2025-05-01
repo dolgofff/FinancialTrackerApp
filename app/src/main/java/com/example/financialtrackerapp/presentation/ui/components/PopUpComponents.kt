@@ -15,8 +15,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -25,7 +23,6 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
@@ -49,6 +46,8 @@ import com.example.financialtrackerapp.R
 import com.example.financialtrackerapp.domain.model.enums.AccountType
 import com.example.financialtrackerapp.domain.model.enums.Category
 import com.example.financialtrackerapp.domain.model.enums.Currency
+import com.example.financialtrackerapp.domain.model.enums.TransactionType
+import com.example.financialtrackerapp.presentation.screen.dialogues.transaction.NewTransactionViewModel
 import com.example.financialtrackerapp.presentation.ui.theme.Black
 import com.example.financialtrackerapp.presentation.ui.theme.LightGrey
 import com.example.financialtrackerapp.presentation.ui.theme.SecondaryBackground
@@ -57,7 +56,7 @@ import com.example.financialtrackerapp.presentation.ui.theme.White
 import com.example.financialtrackerapp.presentation.ui.theme.poppinsFontFamily
 
 @Composable
-fun TripleChoiceButton() {
+fun TripleChoiceButton(selectedType: TransactionType, onTypeSelected: (TransactionType) -> Unit) {
     Card(
         modifier = Modifier
             .size(width = 231.dp, height = 35.dp),
@@ -69,20 +68,36 @@ fun TripleChoiceButton() {
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            ButtonTemplate("Income", {})
-            ButtonTemplate("Expense", {}, SpecificOrange)
-            ButtonTemplate("Transfer", {})
+            ButtonTemplate(
+                textLabel = "Income",
+                isSelected = selectedType == TransactionType.INCOME,
+                onClick = { onTypeSelected(TransactionType.INCOME) }
+            )
+            ButtonTemplate(
+                textLabel = "Expense",
+                isSelected = selectedType == TransactionType.EXPENSE,
+                onClick = { onTypeSelected(TransactionType.EXPENSE) }
+            )
+            ButtonTemplate(
+                textLabel = "Transfer",
+                isSelected = selectedType == TransactionType.TRANSFER,
+                onClick = { onTypeSelected(TransactionType.TRANSFER) }
+            )
         }
     }
 }
 
 @Composable
-fun ButtonTemplate(textLabel: String, onClick: () -> Unit, color: Color = Color.Transparent) {
+fun ButtonTemplate(
+    textLabel: String,
+    isSelected: Boolean,
+    onClick: () -> Unit
+) {
     Button(
         onClick = onClick,
         shape = RoundedCornerShape(22.dp),
         colors = ButtonDefaults.buttonColors(
-            containerColor = color
+            containerColor = if (isSelected) SpecificOrange else Color.Transparent
         ),
         contentPadding = PaddingValues(),
     ) {
@@ -102,7 +117,7 @@ fun ButtonTemplate(textLabel: String, onClick: () -> Unit, color: Color = Color.
     }
 }
 
-@Composable
+/*@Composable
 fun CloseButton(onClick: () -> Unit) {
     IconButton(
         onClick = onClick,
@@ -128,60 +143,81 @@ fun AddButton(onClick: () -> Unit) {
             tint = Color.Unspecified
         )
     }
-}
+}*/
 
 @Composable
-fun ExpenseParameters() {
+fun ExpenseParameters(
+    state: NewTransactionViewModel.TransactionState,
+    onAmountChange: (String) -> Unit,
+    onCategoryChange: (Category) -> Unit,
+    onNoteChange: (String) -> Unit,
+    onPlaceChange: (String) -> Unit,
+    onSubmit: () -> Unit,
+) {
     Column(
         modifier = Modifier.padding(top = 50.dp),
         verticalArrangement = Arrangement.SpaceAround,
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        MoneyInputField("1 000.52")
-        CategoryDropdown(Category.EMPTY_CATEGORY) { }
-        NoteInputField()
-        DateInputField()
-        PlaceInputField()
+        MoneyInputField(amount = state.amount, onAmountChange = onAmountChange)
+        CategoryDropdown(selectedCategory = state.category, onCategoryChange = onCategoryChange)
+        NoteInputField(note = state.note, onNoteChange = onNoteChange)
+        DateInputField(date = state.date)
+        PlaceInputField(place = state.place, onPlaceChange = onPlaceChange)
+        Spacer(modifier = Modifier.weight(1f))
+        SubmissionButton(title = "Save Operation", onClick = onSubmit)
         Spacer(modifier = Modifier.size(32.dp))
-        SubmissionButton("Save Operation", {})
     }
 }
 
 @Composable
-fun IncomeParameters() {
+fun IncomeParameters(
+    state: NewTransactionViewModel.TransactionState,
+    onAmountChange: (String) -> Unit,
+    onCategoryChange: (Category) -> Unit,
+    onNoteChange: (String) -> Unit,
+    onSubmit: () -> Unit,
+) {
     Column(
         modifier = Modifier.padding(top = 50.dp),
         verticalArrangement = Arrangement.SpaceAround,
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        MoneyInputField("1 000.52")
-        CategoryDropdown(Category.EMPTY_CATEGORY) { }
-        NoteInputField()
-        DateInputField()
+        MoneyInputField(amount = state.amount, onAmountChange = onAmountChange)
+        CategoryDropdown(selectedCategory = state.category, onCategoryChange = onCategoryChange)
+        NoteInputField(note = state.note, onNoteChange = onNoteChange)
+        DateInputField(date = state.date)
+        Spacer(modifier = Modifier.weight(1f))
+        SubmissionButton("Save Operation", onClick = onSubmit)
         Spacer(modifier = Modifier.size(32.dp))
-        SubmissionButton("Save Operation", {})
     }
 }
 
 @Composable
-fun TransferParameters() {
+fun TransferParameters(
+    state: NewTransactionViewModel.TransactionState,
+    onAmountChange: (String) -> Unit,
+    onNoteChange: (String) -> Unit,
+    onSubmit: () -> Unit,
+) {
     Column(
         modifier = Modifier.padding(top = 50.dp),
         verticalArrangement = Arrangement.SpaceAround,
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        MoneyInputField("1 000.52")
-        NoteInputField()
-        DateInputField()
-        Spacer(modifier = Modifier.size(64.dp))
-        SubmissionButton("Save Operation", {})
+        MoneyInputField(amount = state.amount, onAmountChange = onAmountChange)
+        NoteInputField(note = state.note, onNoteChange = onNoteChange)
+        DateInputField(date = state.date)
+        Spacer(modifier = Modifier.weight(1f))
+        SubmissionButton("Save Operation", onClick = onSubmit)
+        Spacer(modifier = Modifier.size(32.dp))
     }
 }
 
 @Composable
-fun MoneyInputField(amount: String) {
+fun MoneyInputField(amount: Double, onAmountChange: (String) -> Unit) {
     OutlinedTextField(
-        value = amount,
+        value = formatNumber(amount),
         textStyle = TextStyle(
             fontSize = 40.sp,
             fontFamily = poppinsFontFamily,
@@ -189,7 +225,7 @@ fun MoneyInputField(amount: String) {
             color = White,
             textAlign = TextAlign.End
         ),
-        onValueChange = {},
+        onValueChange = onAmountChange,
         keyboardOptions = KeyboardOptions(
             keyboardType = KeyboardType.Number,
             imeAction = ImeAction.Done
@@ -221,9 +257,9 @@ fun MoneyInputField(amount: String) {
 }
 
 @Composable
-fun NoteInputField() {
+fun NoteInputField(note: String, onNoteChange: (String) -> Unit) {
     OutlinedTextField(
-        value = " ",
+        value = note,
         textStyle = TextStyle(
             fontSize = 20.sp,
             fontFamily = poppinsFontFamily,
@@ -237,10 +273,10 @@ fun NoteInputField() {
                 fontFamily = poppinsFontFamily,
                 fontWeight = FontWeight.SemiBold,
                 fontSize = 22.sp,
-                color = LightGrey
+                color = White
             )
         },
-        onValueChange = {},
+        onValueChange = onNoteChange,
         keyboardOptions = KeyboardOptions(
             keyboardType = KeyboardType.Number,
             imeAction = ImeAction.Done
@@ -263,15 +299,15 @@ fun NoteInputField() {
 }
 
 @Composable
-fun DateInputField() {
+fun DateInputField(date: String) {
     OutlinedTextField(
-        value = " ",
+        value = date,
         textStyle = TextStyle(
-            fontSize = 20.sp,
+            fontSize = 18.sp,
             fontFamily = poppinsFontFamily,
             fontWeight = FontWeight.SemiBold,
-            color = White,
-            textAlign = TextAlign.Start
+            color = SpecificOrange,
+            textAlign = TextAlign.End
         ),
         prefix = {
             Text(
@@ -279,7 +315,7 @@ fun DateInputField() {
                 fontFamily = poppinsFontFamily,
                 fontWeight = FontWeight.SemiBold,
                 fontSize = 22.sp,
-                color = LightGrey
+                color = White
             )
         },
         onValueChange = {},
@@ -288,6 +324,7 @@ fun DateInputField() {
             imeAction = ImeAction.Done
         ),
         singleLine = true,
+        readOnly = true,
         colors = OutlinedTextFieldDefaults.colors(
             focusedContainerColor = Color.Transparent,
             unfocusedContainerColor = Color.Transparent,
@@ -305,9 +342,9 @@ fun DateInputField() {
 }
 
 @Composable
-fun PlaceInputField() {
+fun PlaceInputField(place: String, onPlaceChange: (String) -> Unit) {
     OutlinedTextField(
-        value = " ",
+        value = place,
         textStyle = TextStyle(
             fontSize = 20.sp,
             fontFamily = poppinsFontFamily,
@@ -315,14 +352,14 @@ fun PlaceInputField() {
             color = White,
             textAlign = TextAlign.Start
         ),
-        onValueChange = {},
+        onValueChange = onPlaceChange,
         prefix = {
             Text(
                 text = "Place",
                 fontFamily = poppinsFontFamily,
                 fontWeight = FontWeight.SemiBold,
                 fontSize = 22.sp,
-                color = LightGrey
+                color = White
             )
         },
         keyboardOptions = KeyboardOptions(
@@ -348,8 +385,8 @@ fun PlaceInputField() {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CategoryDropdown(selectedCategory: Category, onCategorySelected: (Category) -> Unit) {
-    var expanded by remember { mutableStateOf(false) } // Управляет показом списка
+fun CategoryDropdown(selectedCategory: Category, onCategoryChange: (Category) -> Unit) {
+    var expanded by remember { mutableStateOf(false) }
 
     val categories = listOf(
         Category.HOUSEHOLD_GOODS,
@@ -385,7 +422,7 @@ fun CategoryDropdown(selectedCategory: Category, onCategorySelected: (Category) 
         onExpandedChange = { expanded = !expanded }
     ) {
         OutlinedTextField(
-            value = "",
+            value = "" /*categoryToTitle(selectedCategory)*/,
             onValueChange = {},
             readOnly = true,
             textStyle = TextStyle(
@@ -397,7 +434,7 @@ fun CategoryDropdown(selectedCategory: Category, onCategorySelected: (Category) 
             trailingIcon = {
                 Icon(
                     modifier = Modifier.padding(end = 12.dp),
-                    painter = painterResource(id = R.drawable.ics_no_category),
+                    painter = painterResource(id = categoryToIcon(selectedCategory)),
                     contentDescription = "divisor",
                     tint = Color.Unspecified,
                 )
@@ -408,7 +445,7 @@ fun CategoryDropdown(selectedCategory: Category, onCategorySelected: (Category) 
                     fontFamily = poppinsFontFamily,
                     fontWeight = FontWeight.SemiBold,
                     fontSize = 22.sp,
-                    color = LightGrey
+                    color = White
                 )
             },
             modifier = Modifier
@@ -431,14 +468,15 @@ fun CategoryDropdown(selectedCategory: Category, onCategorySelected: (Category) 
                             Icon(
                                 painter = painterResource(id = categoryToIcon(category)),
                                 contentDescription = "choice icon",
-                                modifier = Modifier.size(24.dp)
+                                modifier = Modifier.size(31.dp),
+                                tint = Color.Unspecified
                             )
                             Spacer(modifier = Modifier.width(8.dp))
                             Text(text = categoryToTitle(category))
                         }
                     },
                     onClick = {
-                        onCategorySelected(category)
+                        onCategoryChange(category)
                         expanded = false
                     }
                 )
@@ -490,13 +528,14 @@ fun Divisor() {
 
 @Composable
 fun InitialBalanceInputField(balance: Double, onBalanceChange: (String) -> Unit) {
+    Divisor()
     OutlinedTextField(
         value = formatNumber(balance),
         textStyle = TextStyle(
             fontSize = 20.sp,
             fontFamily = poppinsFontFamily,
             fontWeight = FontWeight.SemiBold,
-            color = LightGrey,
+            color = White,
             textAlign = TextAlign.End,
         ),
         onValueChange = onBalanceChange,
@@ -510,7 +549,7 @@ fun InitialBalanceInputField(balance: Double, onBalanceChange: (String) -> Unit)
                 fontFamily = poppinsFontFamily,
                 fontWeight = FontWeight.SemiBold,
                 fontSize = 20.sp,
-                color = LightGrey
+                color = White
             )
         },
         singleLine = true,
@@ -538,6 +577,8 @@ fun CurrencyDropdown(
     selectedCurrency: Currency,
     onCurrencyChange: (Currency) -> Unit
 ) {
+    Divisor()
+
     var expanded by remember { mutableStateOf(false) }
 
     val currencies = listOf(Currency.USD, Currency.RUB)
@@ -558,7 +599,7 @@ fun CurrencyDropdown(
                 fontFamily = poppinsFontFamily,
                 fontWeight = FontWeight.SemiBold,
                 fontSize = 20.sp,
-                color = LightGrey,
+                color = White,
                 textAlign = TextAlign.End
             ),
             prefix = {
@@ -567,13 +608,13 @@ fun CurrencyDropdown(
                     fontFamily = poppinsFontFamily,
                     fontWeight = FontWeight.SemiBold,
                     fontSize = 20.sp,
-                    color = LightGrey
+                    color = White
                 )
             },
             modifier = Modifier
                 .menuAnchor()
                 .fillMaxWidth()
-                .height(50.dp),
+                .height(58.dp),
             colors = OutlinedTextFieldDefaults.colors(
                 focusedContainerColor = Color.Transparent,
                 unfocusedContainerColor = Color.Transparent,
@@ -593,7 +634,10 @@ fun CurrencyDropdown(
             currencies.forEach { currency ->
                 DropdownMenuItem(
                     text = {
-                        Text(labels[currency] ?: currency.name)
+                        Text(
+                            text = labels[currency] ?: currency.name,
+                            fontFamily = poppinsFontFamily,
+                        )
                     },
                     onClick = {
                         onCurrencyChange(currency)
@@ -603,8 +647,6 @@ fun CurrencyDropdown(
             }
         }
     }
-
-    Divisor()
 }
 
 @Composable
@@ -627,7 +669,7 @@ fun NameInputField(name: String, onNameChange: (String) -> Unit) {
                 fontFamily = poppinsFontFamily,
                 fontWeight = FontWeight.SemiBold,
                 fontSize = 20.sp,
-                color = LightGrey
+                color = White
             )
         },
         keyboardOptions = KeyboardOptions(
@@ -649,13 +691,13 @@ fun NameInputField(name: String, onNameChange: (String) -> Unit) {
             .fillMaxWidth()
             .height(height = 50.dp)
     )
-
-    Divisor()
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AccountTypeDropdown(accountType: AccountType, onTypeChange: (AccountType) -> Unit) {
+    Divisor()
+
     var expanded by remember { mutableStateOf(false) }
 
     val types = listOf(
@@ -675,7 +717,7 @@ fun AccountTypeDropdown(accountType: AccountType, onTypeChange: (AccountType) ->
                 fontFamily = poppinsFontFamily,
                 fontWeight = FontWeight.SemiBold,
                 fontSize = 22.sp,
-                color = LightGrey
+                color = White
             ),
             trailingIcon = {
                 Icon(
@@ -691,7 +733,7 @@ fun AccountTypeDropdown(accountType: AccountType, onTypeChange: (AccountType) ->
                     fontFamily = poppinsFontFamily,
                     fontWeight = FontWeight.SemiBold,
                     fontSize = 20.sp,
-                    color = LightGrey
+                    color = White
                 )
             },
             modifier = Modifier
@@ -729,6 +771,4 @@ fun AccountTypeDropdown(accountType: AccountType, onTypeChange: (AccountType) ->
             }
         }
     }
-
-    Divisor()
 }

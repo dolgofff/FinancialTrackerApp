@@ -15,6 +15,7 @@ composeBom = "2024.04.01"
 ### Extra versions of dependencies
 hilt = "2.52"
 ksp = "2.0.20-1.0.25"
+mpandroidchart = "v3.1.0"
 navigation = "2.8.3"
 androidxHiltNavigationCompose = "1.2.0"
 retrofit = "2.11.0"
@@ -56,6 +57,7 @@ hilt-android = { group = "com.google.dagger", name = "hilt-android", version.ref
 androidx-hilt-navigation-compose = { group = "androidx.hilt", name = "hilt-navigation-compose", version.ref = "androidxHiltNavigationCompose" }
 
 ### Room
+mpandroidchart = { module = "com.github.PhilJay:MPAndroidChart", version.ref = "mpandroidchart" }
 room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "room" }
 room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "room" }
 androidx-room = { group = "androidx.room", name = "room-ktx", version.ref = "room" }

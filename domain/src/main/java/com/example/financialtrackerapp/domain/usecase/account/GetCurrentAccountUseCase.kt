@@ -12,5 +12,4 @@ class GetCurrentAccountUseCase(
         val accountId = globalRepository.getCurrentAccountId()
         return accountRepository.getAccountById(accountId)
     }
-
 }

@@ -17,7 +17,7 @@ class NewAccountViewModel @Inject constructor(
     private val createAccountUseCase: CreateAccountUseCase
 ) : ViewModel() {
 
-    private val _accountState = MutableStateFlow<AccountState>(AccountState())
+    private val _accountState = MutableStateFlow(AccountState())
     val accountState: StateFlow<AccountState> = _accountState
 
     fun resetState() {

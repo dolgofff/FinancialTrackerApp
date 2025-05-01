@@ -12,17 +12,14 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
-import androidx.compose.ui.window.DialogWindowProvider
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.financialtrackerapp.presentation.ui.components.AccountTypeDropdown
 import com.example.financialtrackerapp.presentation.ui.components.CurrencyDropdown
@@ -30,7 +27,8 @@ import com.example.financialtrackerapp.presentation.ui.components.InitialBalance
 import com.example.financialtrackerapp.presentation.ui.components.NameInputField
 import com.example.financialtrackerapp.presentation.ui.components.SubmissionButton
 import com.example.financialtrackerapp.presentation.ui.components.parseFormattedNumber
-import com.example.financialtrackerapp.presentation.ui.theme.SecondaryBackground
+import com.example.financialtrackerapp.presentation.ui.theme.BottomBarColor
+import com.example.financialtrackerapp.presentation.ui.theme.DarkGrey
 import com.example.financialtrackerapp.presentation.ui.theme.White
 import com.example.financialtrackerapp.presentation.ui.theme.poppinsFontFamily
 
@@ -47,23 +45,17 @@ fun NewAccountDialogue(
             onDismiss()
         }) {
 
-        val view = LocalView.current
-        SideEffect {
-            val window = (view.parent as? DialogWindowProvider)?.window
-            //.setBackgroundDrawable(ColorDrawable(Color.Transparent.toArgb()))
-        }
-
         Box(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(500.dp)
                 .clip(RoundedCornerShape(46.dp))
-                .background(SecondaryBackground),
+                .background(BottomBarColor),
             contentAlignment = Alignment.TopCenter
         ) {
             Text(
                 modifier = Modifier
-                    .padding(top = 4.dp, bottom = 6.dp),
+                    .padding(top = 4.dp, bottom = 12.dp),
                 text = "New Account",
                 fontSize = 24.sp,
                 fontFamily = poppinsFontFamily,
@@ -98,7 +90,9 @@ fun NewAccountDialogue(
                         )
                     }
                 )
+
                 Spacer(modifier = Modifier.size(72.dp))
+
                 SubmissionButton(
                     title = "Create an account",
                     onClick = {

@@ -35,6 +35,7 @@ import androidx.navigation.NavController
 import com.example.financialtrackerapp.R
 import com.example.financialtrackerapp.presentation.navigation.destinations.AnalysisScreenObject
 import com.example.financialtrackerapp.presentation.navigation.destinations.RegistrationScreenObject
+import com.example.financialtrackerapp.presentation.navigation.destinations.TransactionsScreenObject
 import com.example.financialtrackerapp.presentation.ui.components.CreateAnAccountRow
 import com.example.financialtrackerapp.presentation.ui.components.LoginPasswordField
 import com.example.financialtrackerapp.presentation.ui.components.UniversalAuthButton
@@ -147,7 +148,7 @@ fun LoginScreen(
 
                     LaunchedEffect(authState.value.isAuthenticated, authState.value.errorMessage) {
                         if (authState.value.isAuthenticated) {
-                            navController.navigate(AnalysisScreenObject)
+                            navController.navigate(TransactionsScreenObject)
                         } else {
                             authState.value.errorMessage?.let {
                                 snackbarHostState.showSnackbar(it)

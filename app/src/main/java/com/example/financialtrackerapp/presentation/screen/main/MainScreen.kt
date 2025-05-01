@@ -9,6 +9,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -32,6 +35,7 @@ import com.example.financialtrackerapp.presentation.screen.advices.AdvicesScreen
 import com.example.financialtrackerapp.presentation.screen.analysis.AnalysisScreen
 import com.example.financialtrackerapp.presentation.screen.budgets.BudgetsScreen
 import com.example.financialtrackerapp.presentation.screen.dialogues.menu.AccountsMenu
+import com.example.financialtrackerapp.presentation.screen.dialogues.transaction.NewTransactionDialog
 import com.example.financialtrackerapp.presentation.screen.login.LoginScreen
 import com.example.financialtrackerapp.presentation.screen.registration.RegistrationScreen
 import com.example.financialtrackerapp.presentation.screen.transactions.TransactionsScreen
@@ -44,16 +48,15 @@ import com.example.financialtrackerapp.presentation.ui.theme.poppinsFontFamily
 @Composable
 fun MainScreen(isAuthenticated: Boolean?) {
     val navController = rememberNavController()
+    var showTransactionDialog by rememberSaveable { mutableStateOf(false) }
 
     Scaffold(
-      /*  topBar = {
-            if (isAuthenticated == true) {
-                AccountsMenu()
-            }
-        },*/
         bottomBar = {
             if (isAuthenticated == true) {
-                BottomNavigationBar(navController)
+                BottomNavigationBar(
+                    navController = navController,
+                    onCreateTransactionClick = { showTransactionDialog = true }
+                )
             }
         }
     ) { innerPadding ->
@@ -64,7 +67,6 @@ fun MainScreen(isAuthenticated: Boolean?) {
                 false -> LoginScreenObject
                 null -> LoginScreenObject
             }
-
         ) {
             composable<LoginScreenObject> { LoginScreen(navController) }
             composable<RegistrationScreenObject> { RegistrationScreen(navController) }
@@ -77,58 +79,81 @@ fun MainScreen(isAuthenticated: Boolean?) {
         if (isAuthenticated == true) {
             AccountsMenu()
         }
+
+        if (showTransactionDialog) {
+            NewTransactionDialog(
+                onDismiss = { showTransactionDialog = false }
+            )
+        }
     }
 }
 
 @Composable
-fun BottomNavigationBar(navController: NavController) {
+fun BottomNavigationBar(
+    navController: NavController,
+    onCreateTransactionClick: () -> Unit
+) {
     val listItems = listOf(
         TransactionsScreenObject to BottomItem.TransactionsScreen,
         AnalysisScreenObject to BottomItem.AnalysisScreen,
+        null to BottomItem.TransactionsDialogue, // диалог (иконка посередине)
         BudgetsScreenObject to BottomItem.BudgetsScreen,
         AdvicesScreenObject to BottomItem.AdvicesScreen,
     )
 
-    NavigationBar(
-        containerColor = BottomBarColor,
-    ) {
+    NavigationBar(containerColor = BottomBarColor) {
         val backStackEntry by navController.currentBackStackEntryAsState()
         val currentDestination = backStackEntry?.destination
 
         listItems.forEach { (item, itemInfo) ->
+            val isTransactionDialog = itemInfo is BottomItem.TransactionsDialogue
+
             NavigationBarItem(
-                selected = currentDestination?.hierarchy?.any {
+                selected = !isTransactionDialog && item != null && currentDestination?.hierarchy?.any {
                     it.hasRoute(item::class)
                 } == true,
                 onClick = {
-                    if (currentDestination?.hasRoute(item::class) != true) {
+                    if (isTransactionDialog) {
+                        onCreateTransactionClick()
+                    } else if (item != null && currentDestination?.hasRoute(item::class) != true) {
                         navController.navigate(item)
                     }
                 },
                 icon = {
                     Icon(
                         painter = painterResource(id = itemInfo.iconId),
-                        contentDescription = itemInfo.title
+                        contentDescription = itemInfo.title,
+                       // tint = if (isTransactionDialog) SpecificOrange else Color.Unspecified
                     )
                 },
                 label = {
-                    Text(
-                        text = itemInfo.title,
-                        fontSize = 12.sp,
-                        fontFamily = poppinsFontFamily,
-                        fontWeight = FontWeight.Normal,
-                    )
+                    if (itemInfo.title.isNotEmpty()) {
+                        Text(
+                            text = itemInfo.title,
+                            fontSize = 12.sp,
+                            fontFamily = poppinsFontFamily,
+                            fontWeight = FontWeight.Normal,
+                        )
+                    }
                 },
-                colors = NavigationBarItemDefaults.colors(
-                    selectedIconColor = SpecificOrange,
-                    unselectedIconColor = White,
-                    selectedTextColor = SpecificOrange,
-                    unselectedTextColor = White,
-                    indicatorColor = Color.Transparent
-                )
+                colors = if (isTransactionDialog) {
+                    NavigationBarItemDefaults.colors(
+                        selectedIconColor = NegativeBalance,
+                        unselectedIconColor = NegativeBalance,
+                        selectedTextColor = NegativeBalance,
+                        unselectedTextColor = NegativeBalance,
+                        indicatorColor = Color.Transparent
+                    )
+                } else {
+                    NavigationBarItemDefaults.colors(
+                        selectedIconColor = SpecificOrange,
+                        unselectedIconColor = White,
+                        selectedTextColor = SpecificOrange,
+                        unselectedTextColor = White,
+                        indicatorColor = Color.Transparent
+                    )
+                }
             )
         }
     }
-
-
 }

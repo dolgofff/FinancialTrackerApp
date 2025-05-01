@@ -15,7 +15,7 @@ class RegistrationViewModel @Inject constructor(
     private val registrationUseCase: RegistrationUseCase,
 ) : ViewModel() {
     private val _registrationState = MutableStateFlow(RegisterState())
-    val registrationState: MutableStateFlow<RegisterState> = _registrationState
+    val registrationState: StateFlow<RegisterState> = _registrationState
 
     private val _passwordVisible = MutableStateFlow(false)
     val passwordVisible: StateFlow<Boolean> = _passwordVisible

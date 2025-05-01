@@ -22,3 +22,4 @@ fun Aim.toEntity(): AimEntity {
         savedAmount = savedAmount
     )
 }
+

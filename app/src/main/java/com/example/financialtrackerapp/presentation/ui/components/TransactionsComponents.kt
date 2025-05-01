@@ -4,8 +4,10 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
@@ -16,6 +18,9 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.State
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -34,10 +39,9 @@ fun BalanceBox(currentBalance: Double, modifier: Modifier = Modifier) {
     val formattedBalance = formatNumber(currentBalance)
 
     Card(
-        modifier = modifier.size(width = 357.dp, height = 75.dp),
+        modifier = modifier.size(width = 415.dp, height = 80.dp),
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(containerColor = SecondaryBackground),
-        elevation = CardDefaults.cardElevation(1.dp)
     ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -48,7 +52,7 @@ fun BalanceBox(currentBalance: Double, modifier: Modifier = Modifier) {
         ) {
             Text(
                 text = "Total Balance",
-                fontSize = 19.sp,
+                fontSize = 20.sp,
                 fontFamily = poppinsFontFamily,
                 fontWeight = FontWeight.Medium,
                 color = White
@@ -56,7 +60,7 @@ fun BalanceBox(currentBalance: Double, modifier: Modifier = Modifier) {
 
             Text(
                 text = "$${formattedBalance}",
-                fontSize = 20.sp,
+                fontSize = 21.sp,
                 fontFamily = poppinsFontFamily,
                 fontWeight = FontWeight.Bold,
                 color = White
@@ -71,10 +75,9 @@ fun IncomeBox(incomeAmount: Double) {
 
     Card(
         modifier = Modifier
-            .size(width = 150.dp, height = 92.dp),
+            .size(width = 160.dp, height = 92.dp),
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(containerColor = SecondaryBackground),
-        elevation = CardDefaults.cardElevation(1.dp)
     ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -91,7 +94,7 @@ fun IncomeBox(incomeAmount: Double) {
             )
 
             Text(
-                text = "Income", fontSize = 17.sp,
+                text = "Income", fontSize = 18.sp,
                 fontFamily = poppinsFontFamily,
                 fontWeight = FontWeight.Medium,
                 color = White
@@ -100,7 +103,7 @@ fun IncomeBox(incomeAmount: Double) {
             Text(
                 modifier = Modifier.padding(bottom = 2.dp),
                 text = "$${formattedBalance}",
-                fontSize = 19.sp,
+                fontSize = 20.sp,
                 fontFamily = poppinsFontFamily,
                 fontWeight = FontWeight.SemiBold,
                 color = White
@@ -115,10 +118,9 @@ fun ExpenseBox(expenseAmount: Double) {
 
     Card(
         modifier = Modifier
-            .size(width = 150.dp, height = 92.dp),
+            .size(width = 160.dp, height = 92.dp),
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(containerColor = SecondaryBackground),
-        elevation = CardDefaults.cardElevation(1.dp)
     ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -135,7 +137,7 @@ fun ExpenseBox(expenseAmount: Double) {
             )
 
             Text(
-                text = "Expense", fontSize = 17.sp,
+                text = "Expense", fontSize = 18.sp,
                 fontFamily = poppinsFontFamily,
                 fontWeight = FontWeight.Medium,
                 color = White
@@ -144,7 +146,7 @@ fun ExpenseBox(expenseAmount: Double) {
             Text(
                 modifier = Modifier.padding(bottom = 2.dp),
                 text = "$${formattedBalance}",
-                fontSize = 19.sp,
+                fontSize = 20.sp,
                 fontFamily = poppinsFontFamily,
                 fontWeight = FontWeight.SemiBold,
                 color = White
@@ -153,59 +155,65 @@ fun ExpenseBox(expenseAmount: Double) {
     }
 }
 
-//TODO: ФИЛЬТР ПО ДАТАМ
 @Composable
 fun TransactionsList(transactionsList: List<Transaction>) {
+    val groupedTransactions = transactionsList.groupBy { it.date }
+
     LazyColumn(
-        verticalArrangement = Arrangement.SpaceBetween,
+        verticalArrangement = Arrangement.spacedBy(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        itemsIndexed(
-            transactionsList
-        ) { _, item ->
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(bottom = 16.dp),
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.Start
-            ) {
-                Text(
-                    text = formatTransactionDate(item.date),
-                    fontSize = 15.sp,
-                    fontFamily = poppinsFontFamily,
-                    fontWeight = FontWeight.SemiBold,
-                    color = White
-                )
-                for (transaction in transactionsList) {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.Start
-                    ) {
-                        Icon(
-                            painter = painterResource(id = categoryToIcon(transaction.category)),
-                            contentDescription = "Category Icon",
-                            tint = Color.Transparent
-                        )
+        groupedTransactions.forEach { (date, transactions) ->
+            item {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp),
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.Start
+                ) {
+                    Text(
+                        text = formatTransactionDate(date),
+                        fontSize = 21.sp,
+                        fontFamily = poppinsFontFamily,
+                        fontWeight = FontWeight.SemiBold,
+                        color = White
+                    )
 
-                        Text(
-                            modifier = Modifier.padding(start = 3.dp, end = 52.dp),
-                            text = categoryToTitle(transaction.category),
-                            fontSize = 15.sp,
-                            fontFamily = poppinsFontFamily,
-                            fontWeight = FontWeight.Medium,
-                            color = White
-                        )
+                    Spacer(modifier = Modifier.height(8.dp))
 
-                        Text(
-                            text = formatNumber(transaction.amount),
-                            fontSize = 15.sp,
-                            fontFamily = poppinsFontFamily,
-                            fontWeight = FontWeight.Medium,
-                            color = transactionTypeToColor(transaction.type)
-                        )
+                    transactions.forEach { transaction ->
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 6.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.Start
+                        ) {
+                            Icon(
+                                painter = painterResource(id = categoryToIcon(transaction.category)),
+                                contentDescription = "Category Icon",
+                                tint = Color.Unspecified,
+                                modifier = Modifier.padding(end = 2.dp)
+                            )
 
+                            Text(
+                                modifier = Modifier.padding(start = 3.dp),
+                                text = categoryToTitle(transaction.category),
+                                fontSize = 18.sp,
+                                fontFamily = poppinsFontFamily,
+                                fontWeight = FontWeight.Medium,
+                                color = White
+                            )
+                            Spacer(modifier = Modifier.weight(1f))
+                            Text(
+                                text = "$${formatNumber(transaction.amount)}",
+                                fontSize = 18.sp,
+                                fontFamily = poppinsFontFamily,
+                                fontWeight = FontWeight.Medium,
+                                color = transactionTypeToColor(transaction.type)
+                            )
+                        }
                     }
                 }
             }
