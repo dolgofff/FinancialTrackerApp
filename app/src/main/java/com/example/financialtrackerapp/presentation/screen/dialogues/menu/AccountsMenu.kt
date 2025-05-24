@@ -30,7 +30,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
-import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.financialtrackerapp.domain.model.enums.AccountType
 import com.example.financialtrackerapp.presentation.screen.dialogues.account.NewAccountDialogue
 import com.example.financialtrackerapp.presentation.screen.main.GlobalViewModel
@@ -38,14 +37,13 @@ import com.example.financialtrackerapp.presentation.ui.components.accountTypeToI
 import com.example.financialtrackerapp.presentation.ui.theme.SpecificOrange
 import com.example.financialtrackerapp.presentation.ui.theme.poppinsFontFamily
 
-
 @Composable
-fun AccountsMenu(globalViewModel: GlobalViewModel = hiltViewModel()) {
+fun AccountsMenu(globalViewModel: GlobalViewModel) {
     var expanded by remember { mutableStateOf(false) }
     var showAccountDialog by remember { mutableStateOf(false) }
 
     val globalState by globalViewModel.globalState.collectAsState()
-    val usersAccounts = globalState.accountList.collectAsState(initial = emptyList())
+    val usersAccounts = globalState.accountList
 
     Box(
         modifier = Modifier
@@ -72,7 +70,7 @@ fun AccountsMenu(globalViewModel: GlobalViewModel = hiltViewModel()) {
             expanded = expanded,
             onDismissRequest = { expanded = false },
         ) {
-            usersAccounts.value.forEach { account ->
+            usersAccounts.forEach { account ->
                 DropdownMenuItem(
                     text = {
                         Row(
@@ -105,7 +103,7 @@ fun AccountsMenu(globalViewModel: GlobalViewModel = hiltViewModel()) {
                 )
             }
 
-            if (usersAccounts.value.isNotEmpty()) {
+            if (usersAccounts.isNotEmpty()) {
                 HorizontalDivider()
             }
 
@@ -140,6 +138,8 @@ fun AccountsMenu(globalViewModel: GlobalViewModel = hiltViewModel()) {
     }
 
     if (showAccountDialog) {
-        NewAccountDialogue(onDismiss = { showAccountDialog = false })
+        NewAccountDialogue(
+            globalViewModel = globalViewModel,
+            onDismiss = { showAccountDialog = false })
     }
 }

@@ -5,13 +5,10 @@ import androidx.lifecycle.viewModelScope
 import com.example.financialtrackerapp.domain.model.Transaction
 import com.example.financialtrackerapp.domain.model.enums.TransactionType
 import com.example.financialtrackerapp.domain.usecase.account.GetCurrentAccountUseCase
-import com.example.financialtrackerapp.domain.usecase.transactions.DeleteTransactionUseCase
 import com.example.financialtrackerapp.domain.usecase.transactions.GetAllTransactionsUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -21,6 +18,7 @@ class TransactionsViewModel @Inject constructor(
     private val getAllTransactionsUseCase: GetAllTransactionsUseCase,
     private val getCurrentAccountUseCase: GetCurrentAccountUseCase,
 ) : ViewModel() {
+
     private val _transactionsState = MutableStateFlow(FinancialState())
     val transactionsState = _transactionsState.asStateFlow()
 
@@ -31,9 +29,8 @@ class TransactionsViewModel @Inject constructor(
     private fun loadTransactionsInfo() {
         viewModelScope.launch {
             val currentAccount = getCurrentAccountUseCase()
-
-            currentAccount?.let { account ->
-                getAllTransactionsUseCase(account.id).collect { transactions ->
+            currentAccount?.let {
+                getAllTransactionsUseCase(it.id).collect { transactions ->
                     _transactionsState.update { state ->
                         state.copy(
                             transactionList = transactions,

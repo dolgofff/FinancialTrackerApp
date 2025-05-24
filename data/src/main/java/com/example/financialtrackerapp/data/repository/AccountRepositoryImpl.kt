@@ -12,18 +12,18 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
 class AccountRepositoryImpl(private val accountDao: AccountDao) : AccountRepository {
-    override suspend fun insert(account: Account): Boolean {
+    override suspend fun insert(account: Account): Long {
         val existingAccount = accountDao.getAccountByName(account.name)
 
         return if (existingAccount == null) {
             try {
                 val id = accountDao.insertAccount(account.toEntity())
-                id > 0
+                id
             } catch (e: SQLiteConstraintException) {
-                false
+                -1
             }
         } else {
-            false
+            -2
         }
     }
 

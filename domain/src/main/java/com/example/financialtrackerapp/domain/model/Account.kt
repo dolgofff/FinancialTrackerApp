@@ -4,7 +4,7 @@ import com.example.financialtrackerapp.domain.model.enums.AccountType
 import com.example.financialtrackerapp.domain.model.enums.Currency
 
 data class Account(
-    val id: Long = 0,
+    val id: Long = 0L,
     val name: String,
     val type: AccountType = AccountType.SINGLE,
     val currency: Currency = Currency.USD,

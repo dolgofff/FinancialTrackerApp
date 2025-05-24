@@ -148,6 +148,7 @@ fun AddButton(onClick: () -> Unit) {
 @Composable
 fun ExpenseParameters(
     state: NewTransactionViewModel.TransactionState,
+    currency: Currency,
     onAmountChange: (String) -> Unit,
     onCategoryChange: (Category) -> Unit,
     onNoteChange: (String) -> Unit,
@@ -159,7 +160,7 @@ fun ExpenseParameters(
         verticalArrangement = Arrangement.SpaceAround,
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        MoneyInputField(amount = state.amount, onAmountChange = onAmountChange)
+        MoneyInputField(amount = state.amount, currency = currency , onAmountChange = onAmountChange)
         CategoryDropdown(selectedCategory = state.category, onCategoryChange = onCategoryChange)
         NoteInputField(note = state.note, onNoteChange = onNoteChange)
         DateInputField(date = state.date)
@@ -173,6 +174,7 @@ fun ExpenseParameters(
 @Composable
 fun IncomeParameters(
     state: NewTransactionViewModel.TransactionState,
+    currency: Currency,
     onAmountChange: (String) -> Unit,
     onCategoryChange: (Category) -> Unit,
     onNoteChange: (String) -> Unit,
@@ -183,7 +185,7 @@ fun IncomeParameters(
         verticalArrangement = Arrangement.SpaceAround,
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        MoneyInputField(amount = state.amount, onAmountChange = onAmountChange)
+        MoneyInputField(amount = state.amount, currency = currency , onAmountChange = onAmountChange)
         CategoryDropdown(selectedCategory = state.category, onCategoryChange = onCategoryChange)
         NoteInputField(note = state.note, onNoteChange = onNoteChange)
         DateInputField(date = state.date)
@@ -196,6 +198,7 @@ fun IncomeParameters(
 @Composable
 fun TransferParameters(
     state: NewTransactionViewModel.TransactionState,
+    currency: Currency,
     onAmountChange: (String) -> Unit,
     onNoteChange: (String) -> Unit,
     onSubmit: () -> Unit,
@@ -205,7 +208,7 @@ fun TransferParameters(
         verticalArrangement = Arrangement.SpaceAround,
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        MoneyInputField(amount = state.amount, onAmountChange = onAmountChange)
+        MoneyInputField(amount = state.amount,currency = currency, onAmountChange = onAmountChange)
         NoteInputField(note = state.note, onNoteChange = onNoteChange)
         DateInputField(date = state.date)
         Spacer(modifier = Modifier.weight(1f))
@@ -215,7 +218,7 @@ fun TransferParameters(
 }
 
 @Composable
-fun MoneyInputField(amount: Double, onAmountChange: (String) -> Unit) {
+fun MoneyInputField(amount: Double, currency: Currency, onAmountChange: (String) -> Unit) {
     OutlinedTextField(
         value = formatNumber(amount),
         textStyle = TextStyle(
@@ -232,7 +235,7 @@ fun MoneyInputField(amount: Double, onAmountChange: (String) -> Unit) {
         ),
         suffix = {
             Text(
-                text = "$",
+                text = currencyToSymbol(currency),
                 fontFamily = poppinsFontFamily,
                 fontWeight = FontWeight.SemiBold,
                 fontSize = 40.sp,
@@ -273,7 +276,8 @@ fun NoteInputField(note: String, onNoteChange: (String) -> Unit) {
                 fontFamily = poppinsFontFamily,
                 fontWeight = FontWeight.SemiBold,
                 fontSize = 22.sp,
-                color = White
+                color = White,
+                modifier = Modifier.padding(end = 5.dp)
             )
         },
         onValueChange = onNoteChange,
@@ -359,7 +363,8 @@ fun PlaceInputField(place: String, onPlaceChange: (String) -> Unit) {
                 fontFamily = poppinsFontFamily,
                 fontWeight = FontWeight.SemiBold,
                 fontSize = 22.sp,
-                color = White
+                color = White,
+                modifier = Modifier.padding(end = 5.dp)
             )
         },
         keyboardOptions = KeyboardOptions(
@@ -422,7 +427,7 @@ fun CategoryDropdown(selectedCategory: Category, onCategoryChange: (Category) ->
         onExpandedChange = { expanded = !expanded }
     ) {
         OutlinedTextField(
-            value = "" /*categoryToTitle(selectedCategory)*/,
+            value = "", /*categoryToTitle(selectedCategory)*/
             onValueChange = {},
             readOnly = true,
             textStyle = TextStyle(
@@ -435,7 +440,7 @@ fun CategoryDropdown(selectedCategory: Category, onCategoryChange: (Category) ->
                 Icon(
                     modifier = Modifier.padding(end = 12.dp),
                     painter = painterResource(id = categoryToIcon(selectedCategory)),
-                    contentDescription = "divisor",
+                    contentDescription = "Category Icon",
                     tint = Color.Unspecified,
                 )
             },
@@ -584,7 +589,7 @@ fun CurrencyDropdown(
     val currencies = listOf(Currency.USD, Currency.RUB)
     val labels = mapOf(
         Currency.USD to "$ USD",
-        Currency.RUB to "₽ RUB"
+        Currency.RUB to "₽ РУБ"
     )
 
     ExposedDropdownMenuBox(
@@ -669,7 +674,8 @@ fun NameInputField(name: String, onNameChange: (String) -> Unit) {
                 fontFamily = poppinsFontFamily,
                 fontWeight = FontWeight.SemiBold,
                 fontSize = 20.sp,
-                color = White
+                color = White,
+                modifier = Modifier.padding(end = 5.dp)
             )
         },
         keyboardOptions = KeyboardOptions(
@@ -689,7 +695,6 @@ fun NameInputField(name: String, onNameChange: (String) -> Unit) {
         ),
         modifier = Modifier
             .fillMaxWidth()
-            .height(height = 50.dp)
     )
 }
 
@@ -716,14 +721,16 @@ fun AccountTypeDropdown(accountType: AccountType, onTypeChange: (AccountType) ->
             textStyle = TextStyle(
                 fontFamily = poppinsFontFamily,
                 fontWeight = FontWeight.SemiBold,
-                fontSize = 22.sp,
+                fontSize = 20.sp,
                 color = White
             ),
             trailingIcon = {
                 Icon(
-                    modifier = Modifier.padding(end = 12.dp),
+                    modifier = Modifier
+                        .padding(end = 12.dp)
+                        .size(31.dp),
                     painter = painterResource(id = accountTypeToIcon(accountType)),
-                    contentDescription = "divisor",
+                    contentDescription = "Account Type",
                     tint = Color.Unspecified,
                 )
             },

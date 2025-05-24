@@ -19,6 +19,7 @@ import javax.inject.Inject
 @HiltViewModel
 class AnalysisViewModel @Inject constructor(private val getAllTransactionsUseCase: GetAllTransactionsUseCase) :
     ViewModel() {
+
     private val _transactions = MutableStateFlow<List<Transaction>>(emptyList())
     val transactions = _transactions.asStateFlow()
 
@@ -65,7 +66,7 @@ class AnalysisViewModel @Inject constructor(private val getAllTransactionsUseCas
         return Pair(dataMap, colors)
     }
 
-    private val _selectedChartType = mutableStateOf(ChartType.PIE) // Default to Pie Chart
+    private val _selectedChartType = mutableStateOf(ChartType.PIE)
     val selectedChartType: State<ChartType> get() = _selectedChartType
 
     fun switchType(type: ChartType) {

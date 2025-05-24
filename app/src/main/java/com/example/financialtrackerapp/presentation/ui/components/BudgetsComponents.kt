@@ -197,7 +197,7 @@ fun AimItem(aim: Aim) {
             horizontalArrangement = Arrangement.End
         ) {
             Text(
-                text = "$${formatNumber(aim.savedAmount)} / $${formatNumber(aim.targetAmount)}",
+                text = "₽${formatNumber(aim.savedAmount)} / ₽${formatNumber(aim.targetAmount)}",
                 fontSize = 13.sp,
                 fontFamily = poppinsFontFamily,
                 fontWeight = FontWeight.Medium,
@@ -257,7 +257,7 @@ fun BudgetItem(budget: Budget) {
             horizontalArrangement = Arrangement.End
         ) {
             Text(
-                text = "$${formatNumber(budget.spentAmount)} / $${formatNumber(budget.limitAmount)}",
+                text = "₽${formatNumber(budget.spentAmount)} / ₽${formatNumber(budget.limitAmount)}",
                 fontSize = 15.sp,
                 fontFamily = poppinsFontFamily,
                 fontWeight = FontWeight.Medium,

@@ -30,12 +30,13 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.financialtrackerapp.R
 import com.example.financialtrackerapp.domain.model.Transaction
+import com.example.financialtrackerapp.domain.model.enums.Currency
 import com.example.financialtrackerapp.presentation.ui.theme.SecondaryBackground
 import com.example.financialtrackerapp.presentation.ui.theme.White
 import com.example.financialtrackerapp.presentation.ui.theme.poppinsFontFamily
 
 @Composable
-fun BalanceBox(currentBalance: Double, modifier: Modifier = Modifier) {
+fun BalanceBox(currentBalance: Double, currency: Currency, modifier: Modifier = Modifier) {
     val formattedBalance = formatNumber(currentBalance)
 
     Card(
@@ -57,9 +58,8 @@ fun BalanceBox(currentBalance: Double, modifier: Modifier = Modifier) {
                 fontWeight = FontWeight.Medium,
                 color = White
             )
-
             Text(
-                text = "$${formattedBalance}",
+                text = "${currencyToSymbol(currency)}${formattedBalance}",
                 fontSize = 21.sp,
                 fontFamily = poppinsFontFamily,
                 fontWeight = FontWeight.Bold,
@@ -70,7 +70,7 @@ fun BalanceBox(currentBalance: Double, modifier: Modifier = Modifier) {
 }
 
 @Composable
-fun IncomeBox(incomeAmount: Double) {
+fun IncomeBox(incomeAmount: Double, currency: Currency) {
     val formattedBalance = formatNumber(incomeAmount)
 
     Card(
@@ -102,7 +102,7 @@ fun IncomeBox(incomeAmount: Double) {
 
             Text(
                 modifier = Modifier.padding(bottom = 2.dp),
-                text = "$${formattedBalance}",
+                text = "${currencyToSymbol(currency)}${formattedBalance}",
                 fontSize = 20.sp,
                 fontFamily = poppinsFontFamily,
                 fontWeight = FontWeight.SemiBold,
@@ -113,7 +113,7 @@ fun IncomeBox(incomeAmount: Double) {
 }
 
 @Composable
-fun ExpenseBox(expenseAmount: Double) {
+fun ExpenseBox(expenseAmount: Double, currency: Currency) {
     val formattedBalance = formatNumber(expenseAmount)
 
     Card(
@@ -145,7 +145,7 @@ fun ExpenseBox(expenseAmount: Double) {
 
             Text(
                 modifier = Modifier.padding(bottom = 2.dp),
-                text = "$${formattedBalance}",
+                text = "${currencyToSymbol(currency)}${formattedBalance}",
                 fontSize = 20.sp,
                 fontFamily = poppinsFontFamily,
                 fontWeight = FontWeight.SemiBold,
@@ -156,7 +156,7 @@ fun ExpenseBox(expenseAmount: Double) {
 }
 
 @Composable
-fun TransactionsList(transactionsList: List<Transaction>) {
+fun TransactionsList(transactionsList: List<Transaction>, currency: Currency) {
     val groupedTransactions = transactionsList.groupBy { it.date }
 
     LazyColumn(
@@ -207,7 +207,7 @@ fun TransactionsList(transactionsList: List<Transaction>) {
                             )
                             Spacer(modifier = Modifier.weight(1f))
                             Text(
-                                text = "$${formatNumber(transaction.amount)}",
+                                text = "${currencyToSymbol(currency)}${formatNumber(transaction.amount)}",
                                 fontSize = 18.sp,
                                 fontFamily = poppinsFontFamily,
                                 fontWeight = FontWeight.Medium,

@@ -1,6 +1,5 @@
 package com.example.financialtrackerapp.presentation.screen.transactions
 
-import android.annotation.SuppressLint
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -25,14 +24,11 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.financialtrackerapp.R
-import com.example.financialtrackerapp.domain.model.Transaction
-import com.example.financialtrackerapp.domain.model.enums.Category
-import com.example.financialtrackerapp.domain.model.enums.TransactionType
+import com.example.financialtrackerapp.domain.model.enums.Currency
 import com.example.financialtrackerapp.presentation.screen.main.GlobalViewModel
 import com.example.financialtrackerapp.presentation.ui.components.BalanceBox
 import com.example.financialtrackerapp.presentation.ui.components.ExpenseBox
@@ -46,7 +42,7 @@ import com.example.financialtrackerapp.presentation.ui.theme.poppinsFontFamily
 @Composable
 fun TransactionsScreen(
     transactionsViewModel: TransactionsViewModel = hiltViewModel(),
-    globalViewModel: GlobalViewModel = hiltViewModel()
+    globalViewModel: GlobalViewModel
 ) {
     val transactionsState = transactionsViewModel.transactionsState.collectAsState()
     val globalState by globalViewModel.globalState.collectAsState()
@@ -61,13 +57,9 @@ fun TransactionsScreen(
                     .padding(top = paddingValues.calculateTopPadding()),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                //TODO: ПОМЕНЯТЬ
-                /*BalanceBox(
-                    currentBalance = globalState.currentAccount?.balance ?: 0.0,
-                    modifier = Modifier.padding(16.dp)
-                )*/
                 BalanceBox(
-                    currentBalance = 123423.0,
+                    currentBalance = globalState.currentAccount?.balance ?: 0.0,
+                    currency = globalState.currentAccount?.currency ?: Currency.USD,
                     modifier = Modifier.padding(bottom = 16.dp)
                 )
 
@@ -78,13 +70,15 @@ fun TransactionsScreen(
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
-                    //TODO: ПОМЕНЯТЬ
-                    //IncomeBox(incomeAmount = transactionsState.value.incomeValue)
-                    IncomeBox(incomeAmount = 5325.4)
+                    IncomeBox(
+                        incomeAmount = transactionsState.value.incomeValue,
+                        currency = globalState.currentAccount?.currency ?: Currency.USD,
+                    )
 
-                    //TODO: ПОМЕНЯТЬ
-                    //ExpenseBox(expenseAmount = transactionsState.value.expenseValue)
-                    ExpenseBox(expenseAmount = 7000.0)
+                    ExpenseBox(
+                        expenseAmount = transactionsState.value.expenseValue,
+                        currency = globalState.currentAccount?.currency ?: Currency.USD,
+                    )
                 }
 
                 Spacer(modifier = Modifier.height(16.dp))
@@ -116,92 +110,10 @@ fun TransactionsScreen(
 
                     Spacer(modifier = Modifier.size(8.dp))
 
-                    val testList = listOf(
-                        Transaction(
-                            id = 1,
-                            accountId = 100,
-                            amount = 2500.0,
-                            category = Category.SALARY,
-                            type = TransactionType.INCOME,
-                            note = "Monthly salary",
-                            place = "Company A",
-                        ),
-                        Transaction(
-                            id = 2,
-                            accountId = 100,
-                            amount = 150.0,
-                            category = Category.EATING_OUTS,
-                            type = TransactionType.EXPENSE,
-                            note = "Lunch with friends",
-                            place = "Cafe"
-                        ),
-                        Transaction(
-                            id = 3,
-                            accountId = 100,
-                            amount = 50.0,
-                            category = Category.PUBLIC_TRANSPORT,
-                            type = TransactionType.EXPENSE,
-                            note = "Metro tickets"
-                        ),
-                        Transaction(
-                            id = 4,
-                            accountId = 100,
-                            amount = 500.0,
-                            category = Category.PROPERTY_RENT,
-                            type = TransactionType.EXPENSE,
-                            note = "Monthly rent",
-                            place = "Apartment"
-                        ),
-                        Transaction(
-                            id = 5,
-                            accountId = 100,
-                            amount = 300.0,
-                            category = Category.INVESTMENTS_INCOME,
-                            type = TransactionType.INCOME,
-                            note = "Dividends"
-                        ),
-                        Transaction(
-                            id = 6,
-                            accountId = 100,
-                            amount = 100.0,
-                            category = Category.SUBSCRIPTIONS,
-                            type = TransactionType.EXPENSE,
-                            note = "Music & streaming services"
-                        ),
-
-                        Transaction(
-                            id = 1,
-                            accountId = 100,
-                            amount = 2500.0,
-                            category = Category.GIFTED_INCOME,
-                            type = TransactionType.INCOME,
-                            note = "Gift",
-                            place = "Company A",
-                            date = 1746057600000L
-                        ),
-                        Transaction(
-                            id = 2,
-                            accountId = 100,
-                            amount = 150.0,
-                            category = Category.FINES,
-                            type = TransactionType.EXPENSE,
-                            note = "Lunch with friends",
-                            place = "Cafe",
-                            date = 1746057600000L
-                        ),
-                        Transaction(
-                            id = 3,
-                            accountId = 100,
-                            amount = 50.0,
-                            category = Category.PART_TIME_JOBS,
-                            type = TransactionType.INCOME,
-                            note = "Metro tickets",
-                            date = 1745971200000L
-                        ),
+                    TransactionsList(
+                        transactionsList = transactionsState.value.transactionList,
+                        currency = globalState.currentAccount?.currency ?: Currency.USD
                     )
-                    //TODO: ПОМЕНЯТЬ
-                    //TransactionsList(transactionsState.value.transactionList)
-                    TransactionsList(testList)
                 }
             }
         }

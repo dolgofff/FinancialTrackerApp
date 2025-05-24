@@ -14,7 +14,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class NewAccountViewModel @Inject constructor(
-    private val createAccountUseCase: CreateAccountUseCase
+    private val createAccountUseCase: CreateAccountUseCase,
 ) : ViewModel() {
 
     private val _accountState = MutableStateFlow(AccountState())
@@ -40,6 +40,10 @@ class NewAccountViewModel @Inject constructor(
         _accountState.update { it.copy(initialBalance = inputBalance) }
     }
 
+    fun clear() {
+        _accountState.update { AccountState() }
+    }
+
     fun createNewAccount() {
         viewModelScope.launch {
             if (validateAccountName(_accountState.value.name)) {
@@ -53,8 +57,14 @@ class NewAccountViewModel @Inject constructor(
                 balance = _accountState.value.initialBalance
             )
 
-            if (isCreated) {
-                _accountState.update { it.copy(isCreated = true, errorMessage = null) }
+            if (isCreated > 0) {
+                _accountState.update {
+                    it.copy(
+                        id = isCreated,
+                        isCreated = true,
+                        errorMessage = null
+                    )
+                }
             } else {
                 updateName("")
             }
@@ -88,6 +98,7 @@ class NewAccountViewModel @Inject constructor(
 
     data class AccountState(
         val name: String = "",
+        val id: Long? = null,
         val type: AccountType = AccountType.SINGLE,
         val currency: Currency = Currency.USD,
         val initialBalance: Double = 0.0,

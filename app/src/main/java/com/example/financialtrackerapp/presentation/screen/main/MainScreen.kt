@@ -7,7 +7,6 @@ import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -16,7 +15,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.navigation.NavDestination.Companion.hierarchy
@@ -46,13 +44,13 @@ import com.example.financialtrackerapp.presentation.ui.theme.White
 import com.example.financialtrackerapp.presentation.ui.theme.poppinsFontFamily
 
 @Composable
-fun MainScreen(isAuthenticated: Boolean?) {
+fun MainScreen(isAuthenticated: Boolean, globalViewModel: GlobalViewModel) {
     val navController = rememberNavController()
     var showTransactionDialog by rememberSaveable { mutableStateOf(false) }
 
     Scaffold(
         bottomBar = {
-            if (isAuthenticated == true) {
+            if (isAuthenticated) {
                 BottomNavigationBar(
                     navController = navController,
                     onCreateTransactionClick = { showTransactionDialog = true }
@@ -62,26 +60,28 @@ fun MainScreen(isAuthenticated: Boolean?) {
     ) { innerPadding ->
         NavHost(
             navController = navController,
-            startDestination = when (isAuthenticated) {
-                true -> AnalysisScreenObject
-                false -> LoginScreenObject
-                null -> LoginScreenObject
-            }
+            startDestination = if (isAuthenticated) TransactionsScreenObject else LoginScreenObject
         ) {
-            composable<LoginScreenObject> { LoginScreen(navController) }
-            composable<RegistrationScreenObject> { RegistrationScreen(navController) }
-            composable<TransactionsScreenObject> { TransactionsScreen() }
+            composable<LoginScreenObject> {
+                LoginScreen(
+                    navController = navController,
+                    globalViewModel = globalViewModel
+                )
+            }
+            composable<RegistrationScreenObject> { RegistrationScreen(navController = navController) }
+            composable<TransactionsScreenObject> { TransactionsScreen(globalViewModel = globalViewModel) }
             composable<AnalysisScreenObject> { AnalysisScreen() }
             composable<BudgetsScreenObject> { BudgetsScreen() }
             composable<AdvicesScreenObject> { AdvicesScreen() }
         }
 
-        if (isAuthenticated == true) {
-            AccountsMenu()
+        if (isAuthenticated) {
+            AccountsMenu(globalViewModel = globalViewModel)
         }
 
         if (showTransactionDialog) {
             NewTransactionDialog(
+                globalViewModel = globalViewModel,
                 onDismiss = { showTransactionDialog = false }
             )
         }
@@ -96,7 +96,7 @@ fun BottomNavigationBar(
     val listItems = listOf(
         TransactionsScreenObject to BottomItem.TransactionsScreen,
         AnalysisScreenObject to BottomItem.AnalysisScreen,
-        null to BottomItem.TransactionsDialogue, // диалог (иконка посередине)
+        null to BottomItem.TransactionsDialogue,
         BudgetsScreenObject to BottomItem.BudgetsScreen,
         AdvicesScreenObject to BottomItem.AdvicesScreen,
     )
@@ -123,7 +123,6 @@ fun BottomNavigationBar(
                     Icon(
                         painter = painterResource(id = itemInfo.iconId),
                         contentDescription = itemInfo.title,
-                       // tint = if (isTransactionDialog) SpecificOrange else Color.Unspecified
                     )
                 },
                 label = {

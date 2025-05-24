@@ -14,6 +14,7 @@ import javax.inject.Inject
 class RegistrationViewModel @Inject constructor(
     private val registrationUseCase: RegistrationUseCase,
 ) : ViewModel() {
+
     private val _registrationState = MutableStateFlow(RegisterState())
     val registrationState: StateFlow<RegisterState> = _registrationState
 
@@ -89,21 +90,22 @@ class RegistrationViewModel @Inject constructor(
         (confirmPassword != password) -> ErrorType.DIFFERENT_PASSWORDS_STATE
         else -> null
     }
+
+    data class RegisterState(
+        val username: String = "",
+        val password: String = "",
+        val confirmPassword: String = "",
+        val errorType: ErrorType = ErrorType.EMPTY_CREDENTIALS_STATE,
+        val errorMessage: String? = null,
+        val isRegistered: Boolean = false,
+    )
+
+    enum class ErrorType {
+        CORRECT_CREDENTIALS_STATE,
+        EMPTY_CREDENTIALS_STATE,
+        DIFFERENT_PASSWORDS_STATE,
+        EXISTING_USERNAME_STATE
+    }
 }
 
-data class RegisterState(
-    val username: String = "",
-    val password: String = "",
-    val confirmPassword: String = "",
-    val errorType: ErrorType = ErrorType.EMPTY_CREDENTIALS_STATE,
-    val errorMessage: String? = null,
-    val isRegistered: Boolean = false,
-)
-
-enum class ErrorType {
-    CORRECT_CREDENTIALS_STATE,
-    EMPTY_CREDENTIALS_STATE,
-    DIFFERENT_PASSWORDS_STATE,
-    EXISTING_USERNAME_STATE
-}
 

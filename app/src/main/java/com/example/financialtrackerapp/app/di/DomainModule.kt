@@ -1,17 +1,23 @@
 package com.example.financialtrackerapp.app.di
 
 import com.example.financialtrackerapp.domain.repository.AccountRepository
+import com.example.financialtrackerapp.domain.repository.AimRepository
 import com.example.financialtrackerapp.domain.repository.AuthRepository
+import com.example.financialtrackerapp.domain.repository.BudgetRepository
+import com.example.financialtrackerapp.domain.repository.CrossRefRepository
 import com.example.financialtrackerapp.domain.repository.GlobalRepository
 import com.example.financialtrackerapp.domain.repository.TransactionRepository
 import com.example.financialtrackerapp.domain.repository.UserRepository
 import com.example.financialtrackerapp.domain.usecase.account.CreateAccountUseCase
 import com.example.financialtrackerapp.domain.usecase.account.DeleteAccountByIdUseCase
 import com.example.financialtrackerapp.domain.usecase.account.DeleteAccountUseCase
+import com.example.financialtrackerapp.domain.usecase.account.GetAccountByIdUseCase
 import com.example.financialtrackerapp.domain.usecase.account.GetCurrentAccountUseCase
 import com.example.financialtrackerapp.domain.usecase.account.GetUsersAccountsUseCase
 import com.example.financialtrackerapp.domain.usecase.account.SaveCurrentAccountIdUseCase
 import com.example.financialtrackerapp.domain.usecase.account.UpdateAccountUseCase
+import com.example.financialtrackerapp.domain.usecase.aims.GetAllAimsUseCase
+import com.example.financialtrackerapp.domain.usecase.budgets.GetAllBudgetsUseCase
 import com.example.financialtrackerapp.domain.usecase.security.AuthenticationUseCase
 import com.example.financialtrackerapp.domain.usecase.security.ForgottenPasswordUseCase
 import com.example.financialtrackerapp.domain.usecase.security.InitializeUserUseCase
@@ -26,7 +32,6 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.components.ViewModelComponent
-import javax.inject.Singleton
 
 @Module
 @InstallIn(ViewModelComponent::class)
@@ -67,8 +72,18 @@ class DomainModule {
     }
 
     @Provides
-    fun provideCreateAccountUseCase(accountRepository: AccountRepository): CreateAccountUseCase {
-        return CreateAccountUseCase(accountRepository)
+    fun provideCreateAccountUseCase(
+        accountRepository: AccountRepository,
+        crossRefRepository: CrossRefRepository,
+        globalRepository: GlobalRepository,
+        userRepository: UserRepository,
+    ): CreateAccountUseCase {
+        return CreateAccountUseCase(
+            accountRepository,
+            crossRefRepository,
+            globalRepository,
+            userRepository
+        )
     }
 
     @Provides
@@ -105,6 +120,11 @@ class DomainModule {
     }
 
     @Provides
+    fun provideGetAccountByIdUseCase(accountRepository: AccountRepository): GetAccountByIdUseCase {
+        return GetAccountByIdUseCase(accountRepository)
+    }
+
+    @Provides
     fun provideCreateTransactionUseCase(transactionRepository: TransactionRepository): CreateTransactionUseCase {
         return CreateTransactionUseCase(transactionRepository)
     }
@@ -122,6 +142,16 @@ class DomainModule {
     @Provides
     fun provideUpdateTransactionRepository(transactionRepository: TransactionRepository): UpdateTransactionUseCase {
         return UpdateTransactionUseCase(transactionRepository)
+    }
+
+    @Provides
+    fun provideGetAllBudgetsUseCase(budgetRepository: BudgetRepository): GetAllBudgetsUseCase {
+        return GetAllBudgetsUseCase(budgetRepository)
+    }
+
+    @Provides
+    fun provideGetAllAimsUseCase(aimRepository: AimRepository): GetAllAimsUseCase {
+        return GetAllAimsUseCase(aimRepository)
     }
 
 

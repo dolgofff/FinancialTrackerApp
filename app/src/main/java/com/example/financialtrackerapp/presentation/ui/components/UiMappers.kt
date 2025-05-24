@@ -1,20 +1,45 @@
 package com.example.financialtrackerapp.presentation.ui.components
 
+import android.util.Log
 import androidx.compose.ui.graphics.Color
 import com.example.financialtrackerapp.R
+import com.example.financialtrackerapp.domain.model.Advice
 import com.example.financialtrackerapp.domain.model.enums.AccountType
 import com.example.financialtrackerapp.domain.model.enums.Category
 import com.example.financialtrackerapp.domain.model.enums.Currency
 import com.example.financialtrackerapp.domain.model.enums.TransactionType
+import com.example.financialtrackerapp.presentation.screen.advices.AdvicesViewModel
+import com.example.financialtrackerapp.presentation.ui.theme.BeautyColor
+import com.example.financialtrackerapp.presentation.ui.theme.CharityColor
+import com.example.financialtrackerapp.presentation.ui.theme.ClothesColor
+import com.example.financialtrackerapp.presentation.ui.theme.DevicesColor
 import com.example.financialtrackerapp.presentation.ui.theme.EthernetColor
 import com.example.financialtrackerapp.presentation.ui.theme.FinesColor
+import com.example.financialtrackerapp.presentation.ui.theme.FoodColor
+import com.example.financialtrackerapp.presentation.ui.theme.GiftColor
 import com.example.financialtrackerapp.presentation.ui.theme.GiftsColor
+import com.example.financialtrackerapp.presentation.ui.theme.HomeColor
+import com.example.financialtrackerapp.presentation.ui.theme.InvestColor
+import com.example.financialtrackerapp.presentation.ui.theme.JoyColor
+import com.example.financialtrackerapp.presentation.ui.theme.MedicineColor
 import com.example.financialtrackerapp.presentation.ui.theme.NegativeBalance
+import com.example.financialtrackerapp.presentation.ui.theme.NoCategoryColor
+import com.example.financialtrackerapp.presentation.ui.theme.PetsColor
 import com.example.financialtrackerapp.presentation.ui.theme.PositiveBalance
+import com.example.financialtrackerapp.presentation.ui.theme.ProductsColor
+import com.example.financialtrackerapp.presentation.ui.theme.RandomColor
+import com.example.financialtrackerapp.presentation.ui.theme.RentColor
 import com.example.financialtrackerapp.presentation.ui.theme.SalaryColor
 import com.example.financialtrackerapp.presentation.ui.theme.ShabashkaColor
+import com.example.financialtrackerapp.presentation.ui.theme.SigmaColor
+import com.example.financialtrackerapp.presentation.ui.theme.SubscriptionsColor
+import com.example.financialtrackerapp.presentation.ui.theme.TaxesColor
+import com.example.financialtrackerapp.presentation.ui.theme.TaxiColor
+import com.example.financialtrackerapp.presentation.ui.theme.TransportColor
+import com.example.financialtrackerapp.presentation.ui.theme.TravelColor
 import java.text.DecimalFormat
 import java.text.DecimalFormatSymbols
+import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -25,13 +50,24 @@ fun formatNumber(amount: Double): String {
 }
 
 fun parseFormattedNumber(formatted: String): Double {
-    val symbols = DecimalFormatSymbols(Locale.getDefault()).apply {
+    val symbols = DecimalFormatSymbols(Locale.US).apply {
         groupingSeparator = ','
         decimalSeparator = '.'
     }
     val formatter = DecimalFormat("#,##0.00", symbols)
-    formatter.isParseBigDecimal = true //чтобы не потерять точность, если нужно
-    return formatter.parse(formatted)?.toDouble() ?: 0.0
+    formatter.isParseBigDecimal = true
+
+    val cleaned = formatted.replace("[^\\d,.-]".toRegex(), "")
+
+    if (cleaned != formatted) {
+        Log.w("parseFormattedNumber", "Strange input '$formatted' cleaned to '$cleaned'")
+    }
+
+    return try {
+        formatter.parse(cleaned)?.toDouble() ?: 0.0
+    } catch (e: ParseException) {
+        0.0
+    }
 }
 
 fun categoryToIcon(category: Category): Int {
@@ -129,14 +165,21 @@ fun transactionTypeToColor(transactionType: TransactionType): Color {
 fun currencyToTitle(currency: Currency): String {
     return when (currency) {
         Currency.USD -> "$ USD"
-        Currency.RUB -> "Р РУБ"
+        Currency.RUB -> "₽ РУБ"
+    }
+}
+
+fun currencyToSymbol(currency: Currency): String {
+    return when (currency) {
+        Currency.USD -> "$"
+        Currency.RUB -> "₽"
     }
 }
 
 fun titleToCurrency(currency: String): Currency {
     return when (currency) {
         "$ USD" -> Currency.USD
-        "Р РУБ" -> Currency.RUB
+        "₽ РУБ" -> Currency.RUB
         else -> Currency.USD
     }
 }
@@ -154,32 +197,41 @@ fun parseTransactionDate(dateString: String): Long {
 }
 
 val categoryColorMap = mapOf(
-    Category.BEAUTY_GOODS to Color(0xFFFE6DA2),
-    Category.CHARITY to Color(0xFFF46DFE),
-    Category.CLOTHES to Color(0xFF12125E),
-    Category.DEVICES to Color(0xFF89C400),
-    Category.ENTERTAINMENTS to Color(0xFFFF7328),
-    Category.FINES to Color(0xFFECD947),
-    Category.GIFTED_INCOME to Color(0xFFFF7328),
-    Category.HOUSEHOLD_GOODS to Color(0xFF6D6DFE),
-    Category.INVESTMENTS_INCOME to Color(0xFF86146C),
-    Category.MEDICINE to Color(0xFFA26DFE),
-    Category.PETS to Color(0xFF37AFA7),
-    Category.PRODUCTS to Color(0xFF97A421),
-    Category.RANDOM_SPENDING to Color(0xFFDCDF27),
-    Category.PROPERTY_RENT to Color(0xFFFFBF00),
-    Category.SALARY to Color(0xFF6DFE9D),
-    Category.PART_TIME_JOBS to Color(0xFFF40004),
-    Category.SUBSCRIPTIONS to Color(0xFFFD1010),
-    Category.TAXES to Color(0xFF604420),
-    Category.TAXI to Color(0xFF6DFEDC),
-    Category.PUBLIC_TRANSPORT to Color(0xFF3932FF),
-    Category.TRAVELINGS to Color(0xFF9F0B0E),
-    Category.EATING_OUTS to Color(0xFFFE6D72),
-    Category.COMMUNICATION_SERVICES to Color(0xFF0AAF47),
-    Category.EMPTY_CATEGORY to Color(0xFF8D938F),
-    Category.ALL_EXPENSES to Color(0xFF1500FF)
+    Category.BEAUTY_GOODS to BeautyColor,
+    Category.CHARITY to CharityColor,
+    Category.CLOTHES to ClothesColor,
+    Category.DEVICES to DevicesColor,
+    Category.ENTERTAINMENTS to JoyColor,
+    Category.FINES to FinesColor,
+    Category.GIFTED_INCOME to GiftsColor,
+    Category.HOUSEHOLD_GOODS to HomeColor,
+    Category.INVESTMENTS_INCOME to InvestColor,
+    Category.MEDICINE to MedicineColor,
+    Category.PETS to PetsColor,
+    Category.PRODUCTS to ProductsColor,
+    Category.RANDOM_SPENDING to RandomColor,
+    Category.PROPERTY_RENT to RentColor,
+    Category.SALARY to SalaryColor,
+    Category.PART_TIME_JOBS to ShabashkaColor,
+    Category.SUBSCRIPTIONS to SubscriptionsColor,
+    Category.TAXES to TaxesColor,
+    Category.TAXI to TaxiColor,
+    Category.PUBLIC_TRANSPORT to TransportColor,
+    Category.TRAVELINGS to TravelColor,
+    Category.EATING_OUTS to FoodColor,
+    Category.COMMUNICATION_SERVICES to EthernetColor,
+    Category.EMPTY_CATEGORY to NoCategoryColor,
+    Category.ALL_EXPENSES to SigmaColor,
+    Category.PRESENTS to GiftColor
 )
+
+fun adviceTypeToIcon(advice: AdvicesViewModel.Advice): Int {
+    return when (advice.type) {
+        AdvicesViewModel.AdviceType.CRITICAL -> R.drawable.rc_strong
+        AdvicesViewModel.AdviceType.WARNING -> R.drawable.rc_middle
+        AdvicesViewModel.AdviceType.POSITIVE -> R.drawable.rc_light
+    }
+}
 
 fun indicateProgressColor(savedAmount: Double, targetAmount: Double): Color {
     val progress = (savedAmount / targetAmount).coerceIn(0.0, 1.0)

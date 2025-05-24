@@ -10,13 +10,16 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.financialtrackerapp.domain.model.enums.Currency
 import com.example.financialtrackerapp.domain.model.enums.TransactionType
+import com.example.financialtrackerapp.presentation.screen.main.GlobalViewModel
 import com.example.financialtrackerapp.presentation.ui.components.ExpenseParameters
 import com.example.financialtrackerapp.presentation.ui.components.IncomeParameters
 import com.example.financialtrackerapp.presentation.ui.components.TransferParameters
@@ -25,12 +28,13 @@ import com.example.financialtrackerapp.presentation.ui.components.parseFormatted
 import com.example.financialtrackerapp.presentation.ui.theme.BottomBarColor
 
 @Composable
-
 fun NewTransactionDialog(
     newTransactionViewModel: NewTransactionViewModel = hiltViewModel(),
+    globalViewModel: GlobalViewModel,
     onDismiss: () -> Unit
 ) {
     val transactionState = newTransactionViewModel.transactionState.collectAsState()
+    val currencyState by globalViewModel.globalState.collectAsState()
 
     Dialog(onDismissRequest = {
         newTransactionViewModel.resetState()
@@ -61,6 +65,7 @@ fun NewTransactionDialog(
             when (transactionState.value.selectedType) {
                 TransactionType.EXPENSE -> ExpenseParameters(
                     state = transactionState.value,
+                    currency = currencyState.currentAccount?.currency ?: Currency.USD,
                     onAmountChange = { newTransactionViewModel.updateAmount(parseFormattedNumber(it)) },
                     onCategoryChange = newTransactionViewModel::updateCategory,
                     onNoteChange = newTransactionViewModel::updateNote,
@@ -73,6 +78,7 @@ fun NewTransactionDialog(
 
                 TransactionType.INCOME -> IncomeParameters(
                     state = transactionState.value,
+                    currency = currencyState.currentAccount?.currency ?: Currency.USD,
                     onAmountChange = { newTransactionViewModel.updateAmount(parseFormattedNumber(it)) },
                     onCategoryChange = newTransactionViewModel::updateCategory,
                     onNoteChange = newTransactionViewModel::updateNote,
@@ -84,6 +90,7 @@ fun NewTransactionDialog(
 
                 TransactionType.TRANSFER -> TransferParameters(
                     state = transactionState.value,
+                    currency = currencyState.currentAccount?.currency ?: Currency.USD,
                     onAmountChange = { newTransactionViewModel.updateAmount(parseFormattedNumber(it)) },
                     onNoteChange = newTransactionViewModel::updateNote,
                     onSubmit = {

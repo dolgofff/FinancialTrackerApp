@@ -1,9 +1,11 @@
 package com.example.financialtrackerapp.data.mapper
 
 import com.example.financialtrackerapp.data.entity.AccountEntity
+import com.example.financialtrackerapp.data.entity.AccountUserCrossRef
 import com.example.financialtrackerapp.data.entity.relations.AccountWithUsers
 import com.example.financialtrackerapp.domain.model.Account
 import com.example.financialtrackerapp.domain.model.AccountsUsers
+import com.example.financialtrackerapp.domain.model.CrossRef
 import com.example.financialtrackerapp.domain.model.enums.AccountType
 import com.example.financialtrackerapp.domain.model.enums.Currency
 
@@ -38,5 +40,19 @@ fun AccountsUsers.toEntity(): AccountWithUsers {
     return AccountWithUsers(
         account = account.toEntity(),
         users = listOfUsers.map { it.toEntity() }
+    )
+}
+
+fun AccountUserCrossRef.toDomain(): CrossRef {
+    return CrossRef(
+        accountId = accountId,
+        userId = userId,
+    )
+}
+
+fun CrossRef.toEntity(): AccountUserCrossRef {
+    return AccountUserCrossRef(
+        accountId = accountId,
+        userId = userId
     )
 }

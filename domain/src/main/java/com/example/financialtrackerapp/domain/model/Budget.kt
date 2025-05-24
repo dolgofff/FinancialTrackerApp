@@ -3,7 +3,7 @@ package com.example.financialtrackerapp.domain.model
 import com.example.financialtrackerapp.domain.model.enums.Category
 
 data class Budget(
-    val id: Long = 0,
+    val id: Long = 0L,
     val accountId: Long,
     val category: Category,
     val spentAmount: Double = 0.0,

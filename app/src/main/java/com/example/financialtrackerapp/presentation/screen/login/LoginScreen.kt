@@ -33,9 +33,10 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.financialtrackerapp.R
-import com.example.financialtrackerapp.presentation.navigation.destinations.AnalysisScreenObject
+import com.example.financialtrackerapp.presentation.navigation.destinations.LoginScreenObject
 import com.example.financialtrackerapp.presentation.navigation.destinations.RegistrationScreenObject
 import com.example.financialtrackerapp.presentation.navigation.destinations.TransactionsScreenObject
+import com.example.financialtrackerapp.presentation.screen.main.GlobalViewModel
 import com.example.financialtrackerapp.presentation.ui.components.CreateAnAccountRow
 import com.example.financialtrackerapp.presentation.ui.components.LoginPasswordField
 import com.example.financialtrackerapp.presentation.ui.components.UniversalAuthButton
@@ -50,6 +51,7 @@ import com.example.financialtrackerapp.presentation.ui.theme.poppinsFontFamily
 @Composable
 fun LoginScreen(
     navController: NavController,
+    globalViewModel: GlobalViewModel,
     loginViewModel: LoginViewModel = hiltViewModel()
 ) {
 
@@ -148,7 +150,10 @@ fun LoginScreen(
 
                     LaunchedEffect(authState.value.isAuthenticated, authState.value.errorMessage) {
                         if (authState.value.isAuthenticated) {
-                            navController.navigate(TransactionsScreenObject)
+                            globalViewModel.setAuthenticated(true)
+                            navController.navigate(TransactionsScreenObject) {
+                                popUpTo(LoginScreenObject) { inclusive = true }
+                            }
                         } else {
                             authState.value.errorMessage?.let {
                                 snackbarHostState.showSnackbar(it)
@@ -163,7 +168,6 @@ fun LoginScreen(
                             launchSingleTop = true
                         }
                     }
-
                 }
             }
         })

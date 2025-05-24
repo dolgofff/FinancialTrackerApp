@@ -33,9 +33,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.financialtrackerapp.R
 import com.example.financialtrackerapp.presentation.ui.theme.Black
-import com.example.financialtrackerapp.presentation.ui.theme.UsernamePasswordTextField
 import com.example.financialtrackerapp.presentation.ui.theme.DarkGrey
 import com.example.financialtrackerapp.presentation.ui.theme.GradientSoft
+import com.example.financialtrackerapp.presentation.ui.theme.UsernamePasswordTextField
 import com.example.financialtrackerapp.presentation.ui.theme.poppinsFontFamily
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -66,7 +66,8 @@ fun UsernameField(username: String, onValueChange: (String) -> Unit) {
             textStyle = TextStyle(
                 fontFamily = poppinsFontFamily,
                 fontSize = 18.sp,
-                fontWeight = FontWeight.Normal
+                fontWeight = FontWeight.Normal,
+                color = Black,
             ),
             shape = RoundedCornerShape(8.dp),
             colors = TextFieldDefaults.textFieldColors(
@@ -125,7 +126,8 @@ fun LoginPasswordField(
             textStyle = TextStyle(
                 fontFamily = poppinsFontFamily,
                 fontSize = 18.sp,
-                fontWeight = FontWeight.Normal
+                fontWeight = FontWeight.Normal,
+                color = Black,
             ),
             shape = RoundedCornerShape(8.dp),
             colors = TextFieldDefaults.textFieldColors(
@@ -196,7 +198,8 @@ fun RegistrationPasswordField(
             textStyle = TextStyle(
                 fontFamily = poppinsFontFamily,
                 fontSize = 18.sp,
-                fontWeight = FontWeight.Normal
+                fontWeight = FontWeight.Normal,
+                color = Black,
             ),
             shape = RoundedCornerShape(8.dp),
             colors = TextFieldDefaults.textFieldColors(

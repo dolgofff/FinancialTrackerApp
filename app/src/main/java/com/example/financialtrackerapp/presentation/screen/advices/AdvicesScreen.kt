@@ -18,24 +18,28 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.financialtrackerapp.R
+import com.example.financialtrackerapp.presentation.ui.components.adviceTypeToIcon
 import com.example.financialtrackerapp.presentation.ui.theme.MainBackground
 import com.example.financialtrackerapp.presentation.ui.theme.SecondaryBackground
 import com.example.financialtrackerapp.presentation.ui.theme.White
 import com.example.financialtrackerapp.presentation.ui.theme.poppinsFontFamily
 
 @Composable
-@Preview(showBackground = true)
-fun AdvicesScreen() {
+fun AdvicesScreen(advicesViewModel: AdvicesViewModel = hiltViewModel()) {
+    val advices by advicesViewModel.advices.collectAsState()
+
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         content = { paddingValues ->
@@ -79,64 +83,26 @@ fun AdvicesScreen() {
                         contentPadding = PaddingValues(16.dp),
                         verticalArrangement = Arrangement.spacedBy(12.dp)
                     ) {
-                        item {
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically,
-                                modifier = Modifier.fillMaxWidth()
-                            ) {
-                                Icon(
-                                    painter = painterResource(R.drawable.rc_light),
-                                    contentDescription = "ic",
-                                    tint = Color.Unspecified
-                                )
-                                Spacer(modifier = Modifier.width(12.dp))
-                                Text(
-                                    text = "You are doing well with your transport expenses this month,you can increase them by 12%.",
-                                    color = White,
-                                    fontFamily = poppinsFontFamily,
-                                    fontWeight = FontWeight.Medium,
-                                    fontSize = 16.sp,
-                                )
-                            }
-                        }
-                        item {
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically,
-                                modifier = Modifier.fillMaxWidth()
-                            ) {
-                                Icon(
-                                    painter = painterResource(R.drawable.rc_middle),
-                                    contentDescription = "ic",
-                                    tint = Color.Unspecified
-                                )
-                                Spacer(modifier = Modifier.width(12.dp))
-                                Text(
-                                    text = "Your medicine budget has increased this month, try to reduce other spending.",
-                                    color = White,
-                                    fontFamily = poppinsFontFamily,
-                                    fontWeight = FontWeight.Medium,
-                                    fontSize = 16.sp,
-                                )
-                            }
-                        }
-                        item {
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically,
-                                modifier = Modifier.fillMaxWidth()
-                            ) {
-                                Icon(
-                                    painter = painterResource(R.drawable.rc_strong),
-                                    contentDescription = "ic",
-                                    tint = Color.Unspecified
-                                )
-                                Spacer(modifier = Modifier.width(12.dp))
-                                Text(
-                                    text = "You should instantly reduce your food expenses by 31% to fit the budget this month.",
-                                    color = White,
-                                    fontFamily = poppinsFontFamily,
-                                    fontWeight = FontWeight.Medium,
-                                    fontSize = 16.sp,
-                                )
+                        advices.forEach { advice ->
+                            item {
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    modifier = Modifier.fillMaxWidth()
+                                ) {
+                                    Icon(
+                                        painter = painterResource(adviceTypeToIcon(advice)),
+                                        contentDescription = "Advice",
+                                        tint = Color.Unspecified
+                                    )
+                                    Spacer(modifier = Modifier.width(12.dp))
+                                    Text(
+                                        text = advice.message,
+                                        color = White,
+                                        fontFamily = poppinsFontFamily,
+                                        fontWeight = FontWeight.Medium,
+                                        fontSize = 16.sp,
+                                    )
+                                }
                             }
                         }
                     }
@@ -145,6 +111,67 @@ fun AdvicesScreen() {
         }
     )
 }
+
+/*item {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        Icon(
+            painter = painterResource(R.drawable.rc_light),
+            contentDescription = "ic",
+            tint = Color.Unspecified
+        )
+        Spacer(modifier = Modifier.width(12.dp))
+        Text(
+            text = "You are doing well with your transport expenses this month,you can increase them by 12%.",
+            color = White,
+            fontFamily = poppinsFontFamily,
+            fontWeight = FontWeight.Medium,
+            fontSize = 16.sp,
+        )
+    }
+}
+item {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        Icon(
+            painter = painterResource(R.drawable.rc_middle),
+            contentDescription = "ic",
+            tint = Color.Unspecified
+        )
+        Spacer(modifier = Modifier.width(12.dp))
+        Text(
+            text = "Your medicine budget has increased this month, try to reduce other spending.",
+            color = White,
+            fontFamily = poppinsFontFamily,
+            fontWeight = FontWeight.Medium,
+            fontSize = 16.sp,
+        )
+    }
+}
+item {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        Icon(
+            painter = painterResource(R.drawable.rc_strong),
+            contentDescription = "ic",
+            tint = Color.Unspecified
+        )
+        Spacer(modifier = Modifier.width(12.dp))
+        Text(
+            text = "You should instantly reduce your food expenses by 31% to fit the budget this month.",
+            color = White,
+            fontFamily = poppinsFontFamily,
+            fontWeight = FontWeight.Medium,
+            fontSize = 16.sp,
+        )
+    }
+}*/
 
 
 

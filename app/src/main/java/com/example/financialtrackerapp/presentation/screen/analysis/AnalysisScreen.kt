@@ -18,8 +18,12 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -51,8 +55,15 @@ import com.example.financialtrackerapp.presentation.ui.theme.poppinsFontFamily
 @Preview(showBackground = true)
 fun AnalysisScreen(analysisViewModel: AnalysisViewModel = hiltViewModel()) {
     val selectedType by analysisViewModel.selectedType.collectAsState()
-    val (dataMap, colors) = analysisViewModel.getCategorySums()
+    var dataMap by remember { mutableStateOf<Map<String, Float>>(emptyMap()) }
+    var colors by remember { mutableStateOf<List<Int>>(emptyList()) }
     val selectedChartType by analysisViewModel.selectedChartType
+
+    LaunchedEffect(selectedType) {
+        val (map, colorList) = analysisViewModel.getCategorySums()
+        dataMap = map
+        colors = colorList
+    }
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
@@ -130,7 +141,10 @@ fun AnalysisScreen(analysisViewModel: AnalysisViewModel = hiltViewModel()) {
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.Top
                 ) {
-                    LazyColumn(modifier = Modifier.padding(top = 16.dp)) {
+                    LazyColumn(
+                        verticalArrangement = Arrangement.spacedBy(16.dp),
+                        modifier = Modifier.padding(top = 16.dp)
+                    ) {
                         items(dataMap.toList()) { (category, amount) ->
                             Row(
                                 modifier = Modifier
@@ -139,7 +153,13 @@ fun AnalysisScreen(analysisViewModel: AnalysisViewModel = hiltViewModel()) {
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
                                 Icon(
-                                    painter = painterResource(id = categoryToIcon(stringToCategory(category))),
+                                    painter = painterResource(
+                                        id = categoryToIcon(
+                                            stringToCategory(
+                                                category
+                                            )
+                                        )
+                                    ),
                                     contentDescription = "Category Icon",
                                     tint = Color.Unspecified,
                                     modifier = Modifier.padding(end = 2.dp)
@@ -149,7 +169,7 @@ fun AnalysisScreen(analysisViewModel: AnalysisViewModel = hiltViewModel()) {
 
                                 Text(
                                     text = category,
-                                    fontSize = 18.sp,
+                                    fontSize = 20.sp,
                                     fontFamily = poppinsFontFamily,
                                     fontWeight = FontWeight.Medium,
                                     color = White,
@@ -157,8 +177,8 @@ fun AnalysisScreen(analysisViewModel: AnalysisViewModel = hiltViewModel()) {
                                 )
 
                                 Text(
-                                    text = "$${formatNumber(amount.toDouble())}",
-                                    fontSize = 18.sp,
+                                    text = "₽${formatNumber(amount.toDouble())}",
+                                    fontSize = 20.sp,
                                     fontFamily = poppinsFontFamily,
                                     fontWeight = FontWeight.Medium,
                                     textAlign = TextAlign.End,

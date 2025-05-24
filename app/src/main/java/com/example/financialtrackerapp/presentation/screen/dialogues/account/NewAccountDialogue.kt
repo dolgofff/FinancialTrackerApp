@@ -12,7 +12,9 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -21,6 +23,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.financialtrackerapp.presentation.screen.main.GlobalViewModel
 import com.example.financialtrackerapp.presentation.ui.components.AccountTypeDropdown
 import com.example.financialtrackerapp.presentation.ui.components.CurrencyDropdown
 import com.example.financialtrackerapp.presentation.ui.components.InitialBalanceInputField
@@ -28,16 +31,16 @@ import com.example.financialtrackerapp.presentation.ui.components.NameInputField
 import com.example.financialtrackerapp.presentation.ui.components.SubmissionButton
 import com.example.financialtrackerapp.presentation.ui.components.parseFormattedNumber
 import com.example.financialtrackerapp.presentation.ui.theme.BottomBarColor
-import com.example.financialtrackerapp.presentation.ui.theme.DarkGrey
 import com.example.financialtrackerapp.presentation.ui.theme.White
 import com.example.financialtrackerapp.presentation.ui.theme.poppinsFontFamily
 
 @Composable
 fun NewAccountDialogue(
     onDismiss: () -> Unit,
-    newAccountViewModel: NewAccountViewModel = hiltViewModel()
+    newAccountViewModel: NewAccountViewModel = hiltViewModel(),
+    globalViewModel: GlobalViewModel,
 ) {
-    val accountState = newAccountViewModel.accountState.collectAsState()
+    val accountState by newAccountViewModel.accountState.collectAsState()
 
     Dialog(
         onDismissRequest = {
@@ -69,21 +72,21 @@ fun NewAccountDialogue(
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
                 NameInputField(
-                    name = accountState.value.name,
+                    name = accountState.name,
                     onNameChange = { newAccountViewModel.updateName(it) })
 
                 AccountTypeDropdown(
-                    accountType = accountState.value.type,
+                    accountType = accountState.type,
                     onTypeChange = { newAccountViewModel.updateType(it) })
 
                 CurrencyDropdown(
-                    selectedCurrency = accountState.value.currency,
+                    selectedCurrency = accountState.currency,
                     onCurrencyChange = {
                         newAccountViewModel.updateCurrency(it)
                     })
 
                 InitialBalanceInputField(
-                    balance = accountState.value.initialBalance,
+                    balance = accountState.initialBalance,
                     onBalanceChange = {
                         newAccountViewModel.updateInitialBalance(
                             parseFormattedNumber(it)
@@ -97,9 +100,18 @@ fun NewAccountDialogue(
                     title = "Create an account",
                     onClick = {
                         newAccountViewModel.createNewAccount()
-                        onDismiss()
                     }
                 )
+            }
+        }
+    }
+
+    LaunchedEffect(accountState.isCreated) {
+        if (accountState.isCreated) {
+            accountState.id?.let { id ->
+                globalViewModel.updateCurrentAccount(id)
+                newAccountViewModel.clear()
+                onDismiss()
             }
         }
     }

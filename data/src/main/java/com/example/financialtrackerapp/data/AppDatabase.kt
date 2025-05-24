@@ -5,6 +5,7 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import com.example.financialtrackerapp.data.dao.AccountDao
+import com.example.financialtrackerapp.data.dao.AccountUserCrossRefDao
 import com.example.financialtrackerapp.data.dao.AdviceDao
 import com.example.financialtrackerapp.data.dao.AimDao
 import com.example.financialtrackerapp.data.dao.BudgetDao
@@ -31,6 +32,7 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun budgetDao(): BudgetDao
     abstract fun transactionDao(): TransactionDao
     abstract fun userDao(): UserDao
+    abstract fun accountUserCrossRefDao(): AccountUserCrossRefDao
 
     companion object {
         @Volatile

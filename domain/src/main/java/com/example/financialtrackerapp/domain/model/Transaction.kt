@@ -4,7 +4,7 @@ import com.example.financialtrackerapp.domain.model.enums.Category
 import com.example.financialtrackerapp.domain.model.enums.TransactionType
 
 data class Transaction(
-    val id: Long = 0,
+    val id: Long = 0L,
     val accountId: Long,
     val amount: Double = 0.0,
     val category: Category = Category.EMPTY_CATEGORY,

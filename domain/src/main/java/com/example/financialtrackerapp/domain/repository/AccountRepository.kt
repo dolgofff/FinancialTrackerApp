@@ -6,7 +6,7 @@ import com.example.financialtrackerapp.domain.model.User
 import kotlinx.coroutines.flow.Flow
 
 interface AccountRepository {
-    suspend fun insert(account: Account): Boolean
+    suspend fun insert(account: Account): Long
     suspend fun update(account: Account): Boolean
     suspend fun delete(account: Account): Boolean
     suspend fun getAccountById(accountId: Long): Account?

@@ -132,22 +132,17 @@ fun BarChartView(
                     ViewGroup.LayoutParams.MATCH_PARENT
                 )
 
-                // Отключаем описание и легенду
                 description.isEnabled = false
                 legend.isEnabled = false
 
-                // Устанавливаем отступы
                 setExtraOffsets(10f, 10f, 10f, 10f)
 
-                // Отключаем оси
                 axisLeft.isEnabled = false
                 axisRight.isEnabled = false
                 xAxis.isEnabled = false
 
-                // Стиль для баров
                 setDrawValueAboveBar(true)
 
-                // Устанавливаем прослушиватель для нажатия на столбцы
                 setOnChartValueSelectedListener(object : OnChartValueSelectedListener {
                     override fun onValueSelected(e: Entry?, h: Highlight?) {
                         Toast.makeText(context, "You chose: ${(e as? BarEntry)?.x}", Toast.LENGTH_SHORT).show()
@@ -159,14 +154,12 @@ fun BarChartView(
         },
         modifier = modifier,
         update = { chart ->
-            // Преобразуем dataMap в список пар (index, value)
             val entries = dataMap.toList().mapIndexed { index, (_, value) ->
-                BarEntry(index.toFloat(), value)  // index для оси X, value для оси Y
+                BarEntry(index.toFloat(), value)
             }
 
-            // Настройка DataSet
             val dataSet = BarDataSet(entries, "").apply {
-                setColors(colors) // Устанавливаем цвета для баров
+                setColors(colors)
                 valueTextSize = 14f
                 valueTextColor = Color.WHITE
                 valueFormatter = object : ValueFormatter() {
@@ -175,14 +168,12 @@ fun BarChartView(
                         return if (value < 5f) {
                             ""
                         } else {
-                            // Форматируем значение, если оно больше 0,5% для отображения
                             String.format("%.1f", value)
                         }
                     }
                 }
             }
 
-            // Устанавливаем данные на график
             chart.data = BarData(dataSet)
             chart.invalidate()
         }
