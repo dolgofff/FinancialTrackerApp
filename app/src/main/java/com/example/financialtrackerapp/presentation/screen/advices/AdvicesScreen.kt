@@ -63,7 +63,7 @@ fun AdvicesScreen(advicesViewModel: AdvicesViewModel = hiltViewModel()) {
                     verticalArrangement = Arrangement.Top
                 ) {
                     Text(
-                        text = "Advices",
+                        text = "Рекомендации",
                         color = White,
                         fontFamily = poppinsFontFamily,
                         fontWeight = FontWeight.Medium,
@@ -96,7 +96,7 @@ fun AdvicesScreen(advicesViewModel: AdvicesViewModel = hiltViewModel()) {
                                     )
                                     Spacer(modifier = Modifier.width(12.dp))
                                     Text(
-                                        text = advice.message,
+                                        text = advice.content,
                                         color = White,
                                         fontFamily = poppinsFontFamily,
                                         fontWeight = FontWeight.Medium,
@@ -111,67 +111,4 @@ fun AdvicesScreen(advicesViewModel: AdvicesViewModel = hiltViewModel()) {
         }
     )
 }
-
-/*item {
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier.fillMaxWidth()
-    ) {
-        Icon(
-            painter = painterResource(R.drawable.rc_light),
-            contentDescription = "ic",
-            tint = Color.Unspecified
-        )
-        Spacer(modifier = Modifier.width(12.dp))
-        Text(
-            text = "You are doing well with your transport expenses this month,you can increase them by 12%.",
-            color = White,
-            fontFamily = poppinsFontFamily,
-            fontWeight = FontWeight.Medium,
-            fontSize = 16.sp,
-        )
-    }
-}
-item {
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier.fillMaxWidth()
-    ) {
-        Icon(
-            painter = painterResource(R.drawable.rc_middle),
-            contentDescription = "ic",
-            tint = Color.Unspecified
-        )
-        Spacer(modifier = Modifier.width(12.dp))
-        Text(
-            text = "Your medicine budget has increased this month, try to reduce other spending.",
-            color = White,
-            fontFamily = poppinsFontFamily,
-            fontWeight = FontWeight.Medium,
-            fontSize = 16.sp,
-        )
-    }
-}
-item {
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier.fillMaxWidth()
-    ) {
-        Icon(
-            painter = painterResource(R.drawable.rc_strong),
-            contentDescription = "ic",
-            tint = Color.Unspecified
-        )
-        Spacer(modifier = Modifier.width(12.dp))
-        Text(
-            text = "You should instantly reduce your food expenses by 31% to fit the budget this month.",
-            color = White,
-            fontFamily = poppinsFontFamily,
-            fontWeight = FontWeight.Medium,
-            fontSize = 16.sp,
-        )
-    }
-}*/
-
-
 

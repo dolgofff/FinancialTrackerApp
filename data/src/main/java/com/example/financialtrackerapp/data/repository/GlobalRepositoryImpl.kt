@@ -37,7 +37,7 @@ class GlobalRepositoryImpl(private val context: Context) : GlobalRepository {
         return try {
             context.protoDataStore.data.map { it.currentAccountId }.first()
         } catch (e: IOException) {
-            322L
+            0L
         }
     }
 }

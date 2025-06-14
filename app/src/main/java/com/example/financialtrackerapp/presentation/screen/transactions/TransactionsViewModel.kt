@@ -52,7 +52,7 @@ class TransactionsViewModel @Inject constructor(
     private fun calculateExpenseValue(transactions: List<Transaction>): Double {
         return transactions.filter {
             (it.type == TransactionType.EXPENSE) || (it.type == TransactionType.TRANSFER && it.amount < 0)
-        }.sumOf { it.amount }.let { -it }
+        }.sumOf { it.amount }
     }
 
     data class FinancialState(

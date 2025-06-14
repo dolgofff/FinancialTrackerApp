@@ -127,7 +127,7 @@ fun AccountsMenu(globalViewModel: GlobalViewModel) {
                                 .padding(end = 12.dp)
                         )
                         Text(
-                            text = "Create new account",
+                            text = "Создать счёт",
                             color = SpecificOrange,
                             fontWeight = FontWeight.SemiBold
                         )

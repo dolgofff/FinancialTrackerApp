@@ -142,7 +142,7 @@ fun LoginScreen(
                     Spacer(modifier = Modifier.size(64.dp))
 
                     UniversalAuthButton(
-                        textLabel = "Sign In",
+                        textLabel = "Войти",
                         onClick = {
                             loginViewModel.signIn()
                         }

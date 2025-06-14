@@ -1,4 +1,4 @@
-package com.example.financialtrackerapp.presentation.screen.dialogues.account
+package com.example.financialtrackerapp.presentation.screen.dialogues.budget
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -23,11 +23,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.example.financialtrackerapp.presentation.screen.main.GlobalViewModel
-import com.example.financialtrackerapp.presentation.ui.components.AccountTypeDropdown
-import com.example.financialtrackerapp.presentation.ui.components.CurrencyDropdown
-import com.example.financialtrackerapp.presentation.ui.components.InitialBalanceInputField
-import com.example.financialtrackerapp.presentation.ui.components.NameInputField
+import com.example.financialtrackerapp.presentation.ui.components.CategoryDropdown
+import com.example.financialtrackerapp.presentation.ui.components.DateInputField
+import com.example.financialtrackerapp.presentation.ui.components.SpecialAmountInputField
 import com.example.financialtrackerapp.presentation.ui.components.SubmissionButton
 import com.example.financialtrackerapp.presentation.ui.components.parseFormattedNumber
 import com.example.financialtrackerapp.presentation.ui.theme.BottomBarColor
@@ -35,23 +33,22 @@ import com.example.financialtrackerapp.presentation.ui.theme.White
 import com.example.financialtrackerapp.presentation.ui.theme.poppinsFontFamily
 
 @Composable
-fun NewAccountDialogue(
+fun BudgetDialog(
     onDismiss: () -> Unit,
-    newAccountViewModel: NewAccountViewModel = hiltViewModel(),
-    globalViewModel: GlobalViewModel,
+    budgetViewModel: NewBudgetViewModel = hiltViewModel()
 ) {
-    val accountState by newAccountViewModel.accountState.collectAsState()
+    val budgetState by budgetViewModel.budgetState.collectAsState()
 
     Dialog(
         onDismissRequest = {
-            newAccountViewModel.resetState()
+            budgetViewModel.clear()
             onDismiss()
         }) {
 
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(500.dp)
+                .height(600.dp)
                 .clip(RoundedCornerShape(46.dp))
                 .background(BottomBarColor),
             contentAlignment = Alignment.TopCenter
@@ -59,7 +56,7 @@ fun NewAccountDialogue(
             Text(
                 modifier = Modifier
                     .padding(top = 4.dp, bottom = 12.dp),
-                text = "Новый счёт",
+                text = "Новый бюджет",
                 fontSize = 24.sp,
                 fontFamily = poppinsFontFamily,
                 fontWeight = FontWeight.SemiBold,
@@ -71,48 +68,61 @@ fun NewAccountDialogue(
                 verticalArrangement = Arrangement.SpaceAround,
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
-                NameInputField(
-                    name = accountState.name,
-                    onNameChange = { newAccountViewModel.updateName(it) })
-
-                AccountTypeDropdown(
-                    accountType = accountState.type,
-                    onTypeChange = { newAccountViewModel.updateType(it) })
-
-                CurrencyDropdown(
-                    selectedCurrency = accountState.currency,
-                    onCurrencyChange = {
-                        newAccountViewModel.updateCurrency(it)
-                    })
-
-                InitialBalanceInputField(
-                    balance = accountState.initialBalance,
-                    onBalanceChange = {
-                        newAccountViewModel.updateInitialBalance(
+                SpecialAmountInputField(
+                    label = "Лимит",
+                    amount = budgetState.limitAmount,
+                    showDivisor = false,
+                    onAmountChange = {
+                        budgetViewModel.updateLimitAmount(
                             parseFormattedNumber(it)
                         )
                     }
                 )
 
+                SpecialAmountInputField(
+                    label = "Потрачено",
+                    amount = budgetState.spentAmount,
+                    showDivisor = true,
+                    onAmountChange = {
+                        budgetViewModel.updateSpentAmount(
+                            parseFormattedNumber(it)
+                        )
+                    }
+                )
+
+                CategoryDropdown(
+                    selectedCategory = budgetState.category,
+                    onCategoryChange = budgetViewModel::updateCategory
+                )
+
+                DateInputField(
+                    label = "Начало",
+                    date = budgetState.startDate,
+                    onDateSelected = budgetViewModel::updateStartDate
+                )
+
+                DateInputField(
+                    label = "Конец",
+                    date = budgetState.endDate,
+                    onDateSelected = budgetViewModel::updateEndDate
+                )
+
                 Spacer(modifier = Modifier.size(72.dp))
 
                 SubmissionButton(
-                    title = "Создать счёт",
+                    title = "Создать бюджет",
                     onClick = {
-                        newAccountViewModel.createNewAccount()
+                        budgetViewModel.createBudget()
                     }
                 )
             }
         }
     }
 
-    LaunchedEffect(accountState.isCreated) {
-        if (accountState.isCreated) {
-            accountState.id?.let { id ->
-                globalViewModel.updateCurrentAccount(id)
-                newAccountViewModel.clear()
-                onDismiss()
-            }
+    LaunchedEffect(budgetState.isCreated) {
+        if (budgetState.isCreated) {
+            budgetViewModel.clear()
+            onDismiss()
         }
     }
 }

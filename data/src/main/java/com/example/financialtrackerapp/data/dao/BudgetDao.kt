@@ -27,4 +27,7 @@ interface BudgetDao {
 
     @Query("SELECT * FROM budgets WHERE accountId = :accountId")
     fun getAccountsBudgets(accountId: Long): Flow<List<BudgetEntity>>
+
+    @Query("SELECT * FROM budgets WHERE category = :category")
+    fun getBudgetByCategory(category: String): BudgetEntity?
 }

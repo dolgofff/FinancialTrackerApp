@@ -26,5 +26,5 @@ enum class Category {
     SALARY,
     INVESTMENTS_INCOME,
     PART_TIME_JOBS,
-    GIFTED_INCOME
+    GIFTED_INCOME,
 }

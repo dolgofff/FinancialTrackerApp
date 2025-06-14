@@ -52,6 +52,14 @@ class BudgetsViewModel @Inject constructor(
         }
     }
 
+    fun filter(order: Boolean) {
+        if (order) {
+            budgetsState.value.budgets.sortedByDescending { it.endDate }
+        } else {
+            budgetsState.value.budgets.sortedBy { it.endDate }
+        }
+    }
+
     data class BudgetsState(
         val aims: List<Aim> = emptyList(),
         val budgets: List<Budget> = emptyList()

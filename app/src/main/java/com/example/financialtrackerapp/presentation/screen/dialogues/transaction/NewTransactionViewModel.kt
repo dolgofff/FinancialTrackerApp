@@ -6,6 +6,7 @@ import com.example.financialtrackerapp.domain.model.enums.Category
 import com.example.financialtrackerapp.domain.model.enums.TransactionType
 import com.example.financialtrackerapp.domain.usecase.account.GetCurrentAccountUseCase
 import com.example.financialtrackerapp.domain.usecase.account.UpdateAccountUseCase
+import com.example.financialtrackerapp.domain.usecase.budgets.UpdateSpentValueUseCase
 import com.example.financialtrackerapp.domain.usecase.transactions.CreateTransactionUseCase
 import com.example.financialtrackerapp.presentation.ui.components.formatTransactionDate
 import com.example.financialtrackerapp.presentation.ui.components.parseTransactionDate
@@ -21,6 +22,7 @@ class NewTransactionViewModel @Inject constructor(
     private val createTransactionUseCase: CreateTransactionUseCase,
     private val getCurrentAccountUseCase: GetCurrentAccountUseCase,
     private val updateAccountUseCase: UpdateAccountUseCase,
+    private val updateSpentValueUseCase: UpdateSpentValueUseCase,
 ) :
     ViewModel() {
     private val _transactionState = MutableStateFlow(TransactionState())
@@ -46,8 +48,12 @@ class NewTransactionViewModel @Inject constructor(
         _transactionState.update { it.copy(selectedType = type) }
     }
 
-    fun resetState(){
+    fun resetState() {
         _transactionState.value = TransactionState()
+    }
+
+    fun updateDate(date: String) {
+        _transactionState.update { it.copy(date = date) }
     }
 
     fun createNewTransaction() {
@@ -64,7 +70,7 @@ class NewTransactionViewModel @Inject constructor(
 
                 updateAccountUseCase(account.copy(balance = newBalance))
 
-                createTransactionUseCase(
+                val isCreated = createTransactionUseCase(
                     accountId = account.id,
                     amount = _transactionState.value.amount,
                     category = _transactionState.value.category,
@@ -72,6 +78,15 @@ class NewTransactionViewModel @Inject constructor(
                     date = parseTransactionDate(_transactionState.value.date),
                     note = _transactionState.value.note,
                     place = _transactionState.value.place,
+                )
+
+                if (isCreated) {
+                    _transactionState.update { it.copy(isCreated = true) }
+                }
+
+                updateSpentValueUseCase(
+                    category = _transactionState.value.category,
+                    amount = _transactionState.value.amount.toLong()
                 )
             }
         }
@@ -83,6 +98,7 @@ class NewTransactionViewModel @Inject constructor(
         val note: String = "",
         val date: String = formatTransactionDate(System.currentTimeMillis()),
         val place: String = "",
-        val selectedType: TransactionType = TransactionType.EXPENSE
+        val selectedType: TransactionType = TransactionType.EXPENSE,
+        val isCreated: Boolean = false,
     )
 }

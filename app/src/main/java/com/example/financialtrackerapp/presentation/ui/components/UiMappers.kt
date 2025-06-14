@@ -5,10 +5,10 @@ import androidx.compose.ui.graphics.Color
 import com.example.financialtrackerapp.R
 import com.example.financialtrackerapp.domain.model.Advice
 import com.example.financialtrackerapp.domain.model.enums.AccountType
+import com.example.financialtrackerapp.domain.model.enums.AdviceType
 import com.example.financialtrackerapp.domain.model.enums.Category
 import com.example.financialtrackerapp.domain.model.enums.Currency
 import com.example.financialtrackerapp.domain.model.enums.TransactionType
-import com.example.financialtrackerapp.presentation.screen.advices.AdvicesViewModel
 import com.example.financialtrackerapp.presentation.ui.theme.BeautyColor
 import com.example.financialtrackerapp.presentation.ui.theme.CharityColor
 import com.example.financialtrackerapp.presentation.ui.theme.ClothesColor
@@ -132,8 +132,39 @@ fun categoryToTitle(category: Category): String {
     }
 }
 
+fun categoryToRTitle(category: Category): String {
+    return when (category) {
+        Category.HOUSEHOLD_GOODS -> "Товары для дома"
+        Category.PROPERTY_RENT -> "Аренда недвижимости"
+        Category.EATING_OUTS -> "Питание вне дома"
+        Category.PUBLIC_TRANSPORT -> "Общественный транспорт"
+        Category.PRESENTS -> "Подарки"
+        Category.TAXI -> "Такси"
+        Category.SUBSCRIPTIONS -> "Подписки"
+        Category.BEAUTY_GOODS -> "Косметика и уход"
+        Category.CLOTHES -> "Одежда"
+        Category.TRAVELINGS -> "Путешествия"
+        Category.EMPTY_CATEGORY -> "Без категории"
+        Category.PETS -> "Домашние животные"
+        Category.FINES -> "Штрафы"
+        Category.TAXES -> "Налоги"
+        Category.CHARITY -> "Благотворительность"
+        Category.RANDOM_SPENDING -> "Разовые траты"
+        Category.COMMUNICATION_SERVICES -> "Связь и интернет"
+        Category.MEDICINE -> "Медицина"
+        Category.PRODUCTS -> "Продукты"
+        Category.ENTERTAINMENTS -> "Развлечения"
+        Category.DEVICES -> "Электроника"
+        Category.ALL_EXPENSES -> "Все расходы"
+        Category.SALARY -> "Зарплата"
+        Category.INVESTMENTS_INCOME -> "Доход от инвестиций"
+        Category.PART_TIME_JOBS -> "Подработки"
+        Category.GIFTED_INCOME -> "Подаренные деньги"
+    }
+}
+
 fun stringToCategory(name: String): Category {
-    return Category.values().find {
+    return Category.entries.find {
         it.name.replace("_", " ")
             .lowercase()
             .replaceFirstChar { c -> c.uppercase() } == name
@@ -186,12 +217,12 @@ fun titleToCurrency(currency: String): Currency {
 
 fun formatTransactionDate(timestamp: Long): String {
     val date = Date(timestamp)
-    val dateFormat = SimpleDateFormat("EEEE, d MMMM yyyy", Locale.ENGLISH)
+    val dateFormat = SimpleDateFormat("EEEE, d MMMM yyyy", Locale("ru"))
     return dateFormat.format(date)
 }
 
 fun parseTransactionDate(dateString: String): Long {
-    val dateFormat = SimpleDateFormat("EEEE, d MMMM yyyy", Locale.ENGLISH)
+    val dateFormat = SimpleDateFormat("EEEE, d MMMM yyyy", Locale("ru"))
     val date = dateFormat.parse(dateString)
     return date?.time ?: throw IllegalArgumentException("Invalid date format: $dateString")
 }
@@ -225,11 +256,11 @@ val categoryColorMap = mapOf(
     Category.PRESENTS to GiftColor
 )
 
-fun adviceTypeToIcon(advice: AdvicesViewModel.Advice): Int {
+fun adviceTypeToIcon(advice: Advice): Int {
     return when (advice.type) {
-        AdvicesViewModel.AdviceType.CRITICAL -> R.drawable.rc_strong
-        AdvicesViewModel.AdviceType.WARNING -> R.drawable.rc_middle
-        AdvicesViewModel.AdviceType.POSITIVE -> R.drawable.rc_light
+        AdviceType.CRITICAL -> R.drawable.rc_strong
+        AdviceType.WARNING -> R.drawable.rc_middle
+        AdviceType.POSITIVE -> R.drawable.rc_light
     }
 }
 

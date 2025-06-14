@@ -8,6 +8,7 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
 
+    <color name="specific_orange">#FFEC8200</color>
     <color name="main_background">#1E1E1E</color>
     <color name="secondary_background">#08D9D9D9</color>
     <color name="username_password_tf">#BDBDBD</color>

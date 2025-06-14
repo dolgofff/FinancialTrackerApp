@@ -4,8 +4,6 @@ import com.example.financialtrackerapp.domain.repository.AuthRepository
 import com.example.financialtrackerapp.domain.repository.GlobalRepository
 import com.example.financialtrackerapp.domain.repository.UserRepository
 import com.example.financialtrackerapp.domain.utils.SecurityUtils
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 
 class AuthenticationUseCase(
     private val userRepository: UserRepository,

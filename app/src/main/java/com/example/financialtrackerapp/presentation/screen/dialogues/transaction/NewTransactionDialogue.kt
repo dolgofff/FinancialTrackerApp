@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -65,40 +66,48 @@ fun NewTransactionDialog(
             when (transactionState.value.selectedType) {
                 TransactionType.EXPENSE -> ExpenseParameters(
                     state = transactionState.value,
-                    currency = currencyState.currentAccount?.currency ?: Currency.USD,
+                    currency = currencyState.currentAccount?.currency ?: Currency.RUB,
                     onAmountChange = { newTransactionViewModel.updateAmount(parseFormattedNumber(it)) },
                     onCategoryChange = newTransactionViewModel::updateCategory,
                     onNoteChange = newTransactionViewModel::updateNote,
                     onPlaceChange = newTransactionViewModel::updatePlace,
+                    onDateChange = newTransactionViewModel::updateDate,
                     onSubmit = {
                         newTransactionViewModel.createNewTransaction()
-                        onDismiss()
                     }
                 )
 
                 TransactionType.INCOME -> IncomeParameters(
                     state = transactionState.value,
-                    currency = currencyState.currentAccount?.currency ?: Currency.USD,
+                    currency = currencyState.currentAccount?.currency ?: Currency.RUB,
                     onAmountChange = { newTransactionViewModel.updateAmount(parseFormattedNumber(it)) },
                     onCategoryChange = newTransactionViewModel::updateCategory,
                     onNoteChange = newTransactionViewModel::updateNote,
+                    onDateChange = newTransactionViewModel::updateDate,
                     onSubmit = {
                         newTransactionViewModel.createNewTransaction()
-                        onDismiss()
                     }
                 )
 
                 TransactionType.TRANSFER -> TransferParameters(
                     state = transactionState.value,
-                    currency = currencyState.currentAccount?.currency ?: Currency.USD,
+                    currency = currencyState.currentAccount?.currency ?: Currency.RUB,
                     onAmountChange = { newTransactionViewModel.updateAmount(parseFormattedNumber(it)) },
                     onNoteChange = newTransactionViewModel::updateNote,
+                    onDateChange = newTransactionViewModel::updateDate,
                     onSubmit = {
                         newTransactionViewModel.createNewTransaction()
-                        onDismiss()
                     }
                 )
             }
         }
     }
+
+    LaunchedEffect(transactionState.value.isCreated) {
+        if (transactionState.value.isCreated) {
+            newTransactionViewModel.resetState()
+            onDismiss()
+        }
+    }
+
 }

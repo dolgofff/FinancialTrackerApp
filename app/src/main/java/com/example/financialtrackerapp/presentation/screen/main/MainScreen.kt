@@ -70,8 +70,8 @@ fun MainScreen(isAuthenticated: Boolean, globalViewModel: GlobalViewModel) {
             }
             composable<RegistrationScreenObject> { RegistrationScreen(navController = navController) }
             composable<TransactionsScreenObject> { TransactionsScreen(globalViewModel = globalViewModel) }
-            composable<AnalysisScreenObject> { AnalysisScreen() }
-            composable<BudgetsScreenObject> { BudgetsScreen() }
+            composable<AnalysisScreenObject> { AnalysisScreen(globalViewModel = globalViewModel) }
+            composable<BudgetsScreenObject> { BudgetsScreen(globalViewModel = globalViewModel) }
             composable<AdvicesScreenObject> { AdvicesScreen() }
         }
 

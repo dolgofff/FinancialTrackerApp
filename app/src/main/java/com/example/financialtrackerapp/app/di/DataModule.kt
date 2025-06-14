@@ -56,6 +56,48 @@ object DataModule {
     }
 
     @Provides
+    @Singleton
+    fun provideAccountRepository(accountDao: AccountDao): AccountRepository {
+        return AccountRepositoryImpl(accountDao)
+    }
+
+    @Provides
+    @Singleton
+    fun provideAdviceRepository(adviceDao: AdviceDao): AdviceRepository {
+        return AdviceRepositoryImpl(adviceDao)
+    }
+
+    @Provides
+    @Singleton
+    fun provideAimRepository(aimDao: AimDao): AimRepository {
+        return AimRepositoryImpl(aimDao)
+    }
+
+    @Provides
+    @Singleton
+    fun provideBudgetRepository(budgetDao: BudgetDao): BudgetRepository {
+        return BudgetRepositoryImpl(budgetDao)
+    }
+
+    @Provides
+    @Singleton
+    fun provideTransactionRepository(transactionDao: TransactionDao): TransactionRepository {
+        return TransactionRepositoryImpl(transactionDao)
+    }
+
+    @Provides
+    @Singleton
+    fun provideUserRepository(userDao: UserDao): UserRepository {
+        return UserRepositoryImpl(userDao)
+    }
+
+    @Provides
+    @Singleton
+    fun provideCrossRefRepository(accountUserCrossRefDao: AccountUserCrossRefDao): CrossRefRepository {
+        return CrossRefRepositoryImpl(accountUserCrossRefDao)
+    }
+
+    @Provides
     fun provideAccountDao(database: AppDatabase): AccountDao {
         return database.accountDao()
     }
@@ -88,41 +130,6 @@ object DataModule {
     @Provides
     fun provideUserDao(database: AppDatabase): UserDao {
         return database.userDao()
-    }
-
-    @Provides
-    fun provideAccountRepository(accountDao: AccountDao): AccountRepository {
-        return AccountRepositoryImpl(accountDao)
-    }
-
-    @Provides
-    fun provideAdviceRepository(adviceDao: AdviceDao): AdviceRepository {
-        return AdviceRepositoryImpl(adviceDao)
-    }
-
-    @Provides
-    fun provideAimRepository(aimDao: AimDao): AimRepository {
-        return AimRepositoryImpl(aimDao)
-    }
-
-    @Provides
-    fun provideBudgetRepository(budgetDao: BudgetDao): BudgetRepository {
-        return BudgetRepositoryImpl(budgetDao)
-    }
-
-    @Provides
-    fun provideTransactionRepository(transactionDao: TransactionDao): TransactionRepository {
-        return TransactionRepositoryImpl(transactionDao)
-    }
-
-    @Provides
-    fun provideUserRepository(userDao: UserDao): UserRepository {
-        return UserRepositoryImpl(userDao)
-    }
-
-    @Provides
-    fun provideCrossRefRepository(accountUserCrossRefDao: AccountUserCrossRefDao): CrossRefRepository {
-        return CrossRefRepositoryImpl(accountUserCrossRefDao)
     }
 
 }

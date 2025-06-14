@@ -41,9 +41,9 @@ import com.example.financialtrackerapp.presentation.ui.theme.poppinsFontFamily
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun UsernameField(username: String, onValueChange: (String) -> Unit) {
-    Column() {
+    Column {
         Text(
-            text = "Username",
+            text = "Введите имя",
             fontSize = 14.sp,
             fontFamily = poppinsFontFamily,
             fontWeight = FontWeight.Medium,
@@ -55,7 +55,7 @@ fun UsernameField(username: String, onValueChange: (String) -> Unit) {
             value = username,
             onValueChange = onValueChange,
             singleLine = true,
-            placeholder = { Text(text = "Username") },
+            placeholder = { Text(text = "Имя пользователя") },
             leadingIcon = {
                 Icon(
                     painter = painterResource(id = R.drawable.ic_user),
@@ -90,9 +90,9 @@ fun LoginPasswordField(
     passwordVisible: Boolean,
     onPasswordVisibilityChange: () -> Unit
 ) {
-    Column() {
+    Column {
         Text(
-            text = "Password",
+            text = "Пароль",
             fontSize = 14.sp,
             fontFamily = poppinsFontFamily,
             fontWeight = FontWeight.Medium,
@@ -105,7 +105,7 @@ fun LoginPasswordField(
             onValueChange = onPasswordChange,
             visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
             singleLine = true,
-            placeholder = { Text(text = "Enter your password") },
+            placeholder = { Text(text = "Введите пароль") },
             leadingIcon = {
                 Icon(
                     painter = painterResource(id = R.drawable.ic_password),
@@ -141,7 +141,7 @@ fun LoginPasswordField(
         )
 
         Text(
-            text = "Forgot Password?",
+            text = "Забыли пароль?",
             fontSize = 12.sp,
             fontFamily = poppinsFontFamily,
             fontWeight = FontWeight.Medium,
@@ -162,7 +162,7 @@ fun RegistrationPasswordField(
     passwordVisible: Boolean,
     onPasswordVisibilityChange: () -> Unit
 ) {
-    Column() {
+    Column {
         Text(
             text = label,
             fontSize = 14.sp,
@@ -177,7 +177,7 @@ fun RegistrationPasswordField(
             onValueChange = onPasswordChange,
             visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
             singleLine = true,
-            placeholder = { Text(text = "Enter your password") },
+            placeholder = { Text(text = "Введите пароль") },
             leadingIcon = {
                 Icon(
                     painter = painterResource(id = R.drawable.ic_password),
@@ -255,7 +255,7 @@ fun CreateAnAccountRow(onClick: () -> Unit) {
         )
 
         Text(
-            text = "Or create an account",
+            text = "Создать аккаунт",
             fontSize = 13.sp,
             fontFamily = poppinsFontFamily,
             fontWeight = FontWeight.Medium,

@@ -59,7 +59,7 @@ fun TransactionsScreen(
             ) {
                 BalanceBox(
                     currentBalance = globalState.currentAccount?.balance ?: 0.0,
-                    currency = globalState.currentAccount?.currency ?: Currency.USD,
+                    currency = globalState.currentAccount?.currency ?: Currency.RUB,
                     modifier = Modifier.padding(bottom = 16.dp)
                 )
 
@@ -72,12 +72,12 @@ fun TransactionsScreen(
                 ) {
                     IncomeBox(
                         incomeAmount = transactionsState.value.incomeValue,
-                        currency = globalState.currentAccount?.currency ?: Currency.USD,
+                        currency = globalState.currentAccount?.currency ?: Currency.RUB,
                     )
 
                     ExpenseBox(
                         expenseAmount = transactionsState.value.expenseValue,
-                        currency = globalState.currentAccount?.currency ?: Currency.USD,
+                        currency = globalState.currentAccount?.currency ?: Currency.RUB,
                     )
                 }
 
@@ -93,7 +93,7 @@ fun TransactionsScreen(
                     verticalArrangement = Arrangement.Top
                 ) {
                     Text(
-                        text = "Transactions",
+                        text = "Транзакции",
                         color = White,
                         fontFamily = poppinsFontFamily,
                         fontWeight = FontWeight.Medium,
@@ -112,7 +112,7 @@ fun TransactionsScreen(
 
                     TransactionsList(
                         transactionsList = transactionsState.value.transactionList,
-                        currency = globalState.currentAccount?.currency ?: Currency.USD
+                        currency = globalState.currentAccount?.currency ?: Currency.RUB
                     )
                 }
             }

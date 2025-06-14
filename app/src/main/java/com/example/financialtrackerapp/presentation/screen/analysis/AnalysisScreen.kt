@@ -18,12 +18,8 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -31,18 +27,20 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.financialtrackerapp.R
-import com.example.financialtrackerapp.domain.model.enums.TransactionType
+import com.example.financialtrackerapp.domain.model.enums.Currency
+import com.example.financialtrackerapp.presentation.screen.main.GlobalViewModel
 import com.example.financialtrackerapp.presentation.ui.components.BarChartView
 import com.example.financialtrackerapp.presentation.ui.components.ChartType
 import com.example.financialtrackerapp.presentation.ui.components.PieChartView
 import com.example.financialtrackerapp.presentation.ui.components.ToggleChartTypeButton
 import com.example.financialtrackerapp.presentation.ui.components.ToggleTransactionTypeButton
 import com.example.financialtrackerapp.presentation.ui.components.categoryToIcon
+import com.example.financialtrackerapp.presentation.ui.components.categoryToRTitle
+import com.example.financialtrackerapp.presentation.ui.components.currencyToSymbol
 import com.example.financialtrackerapp.presentation.ui.components.formatNumber
 import com.example.financialtrackerapp.presentation.ui.components.stringToCategory
 import com.example.financialtrackerapp.presentation.ui.components.transactionTypeToColor
@@ -52,18 +50,12 @@ import com.example.financialtrackerapp.presentation.ui.theme.White
 import com.example.financialtrackerapp.presentation.ui.theme.poppinsFontFamily
 
 @Composable
-@Preview(showBackground = true)
-fun AnalysisScreen(analysisViewModel: AnalysisViewModel = hiltViewModel()) {
-    val selectedType by analysisViewModel.selectedType.collectAsState()
-    var dataMap by remember { mutableStateOf<Map<String, Float>>(emptyMap()) }
-    var colors by remember { mutableStateOf<List<Int>>(emptyList()) }
-    val selectedChartType by analysisViewModel.selectedChartType
-
-    LaunchedEffect(selectedType) {
-        val (map, colorList) = analysisViewModel.getCategorySums()
-        dataMap = map
-        colors = colorList
-    }
+fun AnalysisScreen(
+    analysisViewModel: AnalysisViewModel = hiltViewModel(),
+    globalViewModel: GlobalViewModel
+) {
+    val analysisState by analysisViewModel.analysisState.collectAsState()
+    val globalState by globalViewModel.globalState.collectAsState()
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
@@ -76,16 +68,19 @@ fun AnalysisScreen(analysisViewModel: AnalysisViewModel = hiltViewModel()) {
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Text(
-                    text = "Detailed Analysis",
+                    text = "Статистика",
                     color = White,
                     fontFamily = poppinsFontFamily,
                     fontWeight = FontWeight.Medium,
                     fontSize = 23.sp,
                     modifier = Modifier.padding(top = 18.dp)
                 )
+
+                val dividerPainter = painterResource(id = R.drawable.white_line)
+
                 Icon(
                     modifier = Modifier.padding(top = 5.dp),
-                    painter = painterResource(id = R.drawable.white_line),
+                    painter = dividerPainter,
                     contentDescription = "divisor",
                     tint = Color.White,
                 )
@@ -98,40 +93,41 @@ fun AnalysisScreen(analysisViewModel: AnalysisViewModel = hiltViewModel()) {
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
                     ToggleChartTypeButton(
-                        selectedChartType = selectedChartType,
-                        onToggle = { analysisViewModel.switchType(it) }
+                        selectedChartType = analysisState.selectedChartType,
+                        onToggle = { analysisViewModel.setChartType(it) }
                     )
 
                     ToggleTransactionTypeButton(
-                        selectedType = selectedType,
-                        onToggle = { analysisViewModel.switchType() }
+                        selectedType = analysisState.selectedType,
+                        onToggle = { analysisViewModel.toggleTransactionType() }
                     )
                 }
 
-                when (selectedChartType) {
+                when (analysisState.selectedChartType) {
                     ChartType.PIE -> PieChartView(
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(300.dp),
-                        dataMap = dataMap,
-                        colors = colors
+                        dataMap = analysisState.categorySums,
+                        colors = analysisState.colors
                     )
 
                     ChartType.BAR -> BarChartView(
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(300.dp),
-                        dataMap = dataMap,
-                        colors = colors
+                        dataMap = analysisState.categorySums,
+                        colors = analysisState.colors
                     )
                 }
 
                 Icon(
                     modifier = Modifier.padding(top = 5.dp, bottom = 5.dp),
-                    painter = painterResource(id = R.drawable.white_line),
+                    painter = dividerPainter,
                     contentDescription = "divisor",
                     tint = Color.White,
                 )
+
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -145,7 +141,7 @@ fun AnalysisScreen(analysisViewModel: AnalysisViewModel = hiltViewModel()) {
                         verticalArrangement = Arrangement.spacedBy(16.dp),
                         modifier = Modifier.padding(top = 16.dp)
                     ) {
-                        items(dataMap.toList()) { (category, amount) ->
+                        items(analysisState.categorySums.toList()) { (category, amount) ->
                             Row(
                                 modifier = Modifier
                                     .fillMaxWidth()
@@ -154,11 +150,7 @@ fun AnalysisScreen(analysisViewModel: AnalysisViewModel = hiltViewModel()) {
                             ) {
                                 Icon(
                                     painter = painterResource(
-                                        id = categoryToIcon(
-                                            stringToCategory(
-                                                category
-                                            )
-                                        )
+                                        id = categoryToIcon(stringToCategory(category))
                                     ),
                                     contentDescription = "Category Icon",
                                     tint = Color.Unspecified,
@@ -168,7 +160,7 @@ fun AnalysisScreen(analysisViewModel: AnalysisViewModel = hiltViewModel()) {
                                 Spacer(modifier = Modifier.width(8.dp))
 
                                 Text(
-                                    text = category,
+                                    text = categoryToRTitle(stringToCategory(category)) /*category*/,
                                     fontSize = 20.sp,
                                     fontFamily = poppinsFontFamily,
                                     fontWeight = FontWeight.Medium,
@@ -177,12 +169,12 @@ fun AnalysisScreen(analysisViewModel: AnalysisViewModel = hiltViewModel()) {
                                 )
 
                                 Text(
-                                    text = "₽${formatNumber(amount.toDouble())}",
+                                    text = "${currencyToSymbol(globalState.currentAccount?.currency ?: Currency.RUB)} ${formatNumber(amount.toDouble())}",
                                     fontSize = 20.sp,
                                     fontFamily = poppinsFontFamily,
                                     fontWeight = FontWeight.Medium,
                                     textAlign = TextAlign.End,
-                                    color = transactionTypeToColor(selectedType)
+                                    color = transactionTypeToColor(analysisState.selectedType)
                                 )
                             }
                         }

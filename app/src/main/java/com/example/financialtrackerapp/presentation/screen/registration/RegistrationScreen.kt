@@ -102,7 +102,7 @@ fun RegistrationScreen(
                 )
                 {
                     Text(
-                        text = "REGISTRATION",
+                        text = "РЕГИСТРАЦИЯ",
                         style = TextStyle(brush = GradientSoft),
                         fontFamily = poppinsFontFamily,
                         fontWeight = FontWeight.SemiBold,
@@ -119,7 +119,7 @@ fun RegistrationScreen(
                     Spacer(modifier = Modifier.size(48.dp))
 
                     RegistrationPasswordField(
-                        label = "Password",
+                        label = "Пароль",
                         password = registrationState.value.password,
                         onPasswordChange = { registrationViewModel.updatePasswordText(it) },
                         passwordVisible = registrationViewModel.passwordVisible.collectAsState().value,
@@ -129,7 +129,7 @@ fun RegistrationScreen(
                     Spacer(modifier = Modifier.size(48.dp))
 
                     RegistrationPasswordField(
-                        label = "Confirm password",
+                        label = "Подтвердите пароль",
                         password = registrationState.value.confirmPassword,
                         onPasswordChange = { registrationViewModel.updateConfirmPasswordText(it) },
                         passwordVisible = registrationViewModel.passwordVisible.collectAsState().value,
@@ -139,7 +139,7 @@ fun RegistrationScreen(
                     Spacer(modifier = Modifier.size(64.dp))
 
                     UniversalAuthButton(
-                        textLabel = "Register",
+                        textLabel = "Зарегистрироваться",
                         onClick = { registrationViewModel.register() }
                     )
 

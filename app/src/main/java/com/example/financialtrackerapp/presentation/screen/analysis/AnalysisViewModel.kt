@@ -1,76 +1,110 @@
 package com.example.financialtrackerapp.presentation.screen.analysis
 
-import androidx.compose.runtime.State
-import androidx.compose.runtime.mutableStateOf
+import android.util.Log
 import androidx.compose.ui.graphics.Color.Companion.Gray
 import androidx.compose.ui.graphics.toArgb
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.example.financialtrackerapp.domain.model.Transaction
-import com.example.financialtrackerapp.domain.model.enums.Category
 import com.example.financialtrackerapp.domain.model.enums.TransactionType
+import com.example.financialtrackerapp.domain.usecase.account.GetCurrentAccountUseCase
 import com.example.financialtrackerapp.domain.usecase.transactions.GetAllTransactionsUseCase
 import com.example.financialtrackerapp.presentation.ui.components.ChartType
 import com.example.financialtrackerapp.presentation.ui.components.categoryColorMap
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class AnalysisViewModel @Inject constructor(private val getAllTransactionsUseCase: GetAllTransactionsUseCase) :
-    ViewModel() {
-
-    private val _transactions = MutableStateFlow<List<Transaction>>(emptyList())
-    val transactions = _transactions.asStateFlow()
-
-    private val _selectedType = MutableStateFlow(TransactionType.EXPENSE)
-    val selectedType = _selectedType.asStateFlow()
-
-    fun switchType() {
-        _selectedType.value = if (_selectedType.value == TransactionType.EXPENSE)
-            TransactionType.INCOME
-        else
-            TransactionType.EXPENSE
-    }
+class AnalysisViewModel @Inject constructor(
+    private val getAllTransactionsUseCase: GetAllTransactionsUseCase,
+    private val getCurrentAccountUseCase: GetCurrentAccountUseCase
+) : ViewModel() {
+    private val _analysisState = MutableStateFlow(AnalysisState())
+    val analysisState = _analysisState.asStateFlow()
 
     init {
-        _transactions.value = listOf(
-            Transaction(2, 101, 123.15, Category.TAXI, TransactionType.EXPENSE),
-            Transaction(5, 101, 432.1, Category.MEDICINE, TransactionType.EXPENSE),
-            Transaction(6, 101, 91.89, Category.DEVICES, TransactionType.EXPENSE),
-            Transaction(7, 101, 45.56, Category.SUBSCRIPTIONS, TransactionType.EXPENSE),
-            Transaction(8, 101, 321.48, Category.ENTERTAINMENTS, TransactionType.EXPENSE),
-            Transaction(9, 101, 666.11, Category.CHARITY, TransactionType.EXPENSE),
-            Transaction(3, 101, 1500.0, Category.SALARY, TransactionType.INCOME),
-            Transaction(4, 101, 5334.0, Category.GIFTED_INCOME, TransactionType.INCOME),
-            Transaction(4, 101, 5334.0, Category.INVESTMENTS_INCOME, TransactionType.INCOME)
-        )
+        loadTransactionsInfo()
     }
 
-    fun getCategorySums(): Pair<Map<String, Float>, List<Int>> {
-        val type = _selectedType.value
-        val filtered = transactions.value.filter { it.type == type }
+    private fun loadTransactionsInfo() {
+        viewModelScope.launch {
+            try {
+                val currentAccount = getCurrentAccountUseCase()
+                currentAccount?.let { account ->
+                    getAllTransactionsUseCase(account.id).collect { transactions ->
+                        _analysisState.update {
+                            val updated = it.copy(transactionList = transactions)
+                            updated.copy(
+                                categorySums = calculateCategorySums(
+                                    transactions,
+                                    updated.selectedType
+                                ),
+                                colors = calculateColors(transactions, updated.selectedType)
+                            )
+                        }
+                    }
+                }
+            } catch (e: Exception) {
+                Log.e("AnalysisViewModel", "Error loading transactions", e)
+            }
+        }
+    }
 
-        val grouped = filtered
+    fun toggleTransactionType() {
+        _analysisState.update {
+            val newType = if (it.selectedType == TransactionType.EXPENSE)
+                TransactionType.INCOME
+            else
+                TransactionType.EXPENSE
+
+            it.copy(
+                selectedType = newType,
+                categorySums = calculateCategorySums(it.transactionList, newType),
+                colors = calculateColors(it.transactionList, newType)
+            )
+        }
+    }
+
+    fun setChartType(type: ChartType) {
+        _analysisState.update { it.copy(selectedChartType = type) }
+    }
+
+    private fun calculateCategorySums(
+        transactions: List<Transaction>,
+        type: TransactionType
+    ): Map<String, Float> {
+        return transactions
+            .filter { it.type == type }
             .groupBy { it.category }
             .mapValues { it.value.sumOf { t -> t.amount }.toFloat() }
-
-        val dataMap = grouped.mapKeys {
-            it.key.name.replace("_", " ")
-                .lowercase()
-                .replaceFirstChar { c -> c.uppercase() }
-        }
-
-        val colors = grouped.keys.map { categoryColorMap[it] ?: Gray }.map { it.toArgb() }
-
-        return Pair(dataMap, colors)
+            .mapKeys {
+                it.key.name.replace("_", " ")
+                    .lowercase()
+                    .replaceFirstChar { c -> c.uppercase() }
+            }
     }
 
-    private val _selectedChartType = mutableStateOf(ChartType.PIE)
-    val selectedChartType: State<ChartType> get() = _selectedChartType
+    private fun calculateColors(
+        transactions: List<Transaction>,
+        type: TransactionType
+    ): List<Int> {
+        val categories = transactions
+            .filter { it.type == type }
+            .map { it.category }
+            .distinct()
 
-    fun switchType(type: ChartType) {
-        _selectedChartType.value = type
+        return categories.map { categoryColorMap[it] ?: Gray }.map { it.toArgb() }
     }
 
+    data class AnalysisState(
+        val transactionList: List<Transaction> = emptyList(),
+        val selectedType: TransactionType = TransactionType.EXPENSE,
+        val selectedChartType: ChartType = ChartType.PIE,
+        val categorySums: Map<String, Float> = emptyMap(),
+        val colors: List<Int> = emptyList(),
+    )
 }

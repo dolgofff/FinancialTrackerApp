@@ -1,6 +1,8 @@
 package com.example.financialtrackerapp.presentation.ui.components
 
+import android.app.DatePickerDialog
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -34,6 +36,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -54,6 +57,7 @@ import com.example.financialtrackerapp.presentation.ui.theme.SecondaryBackground
 import com.example.financialtrackerapp.presentation.ui.theme.SpecificOrange
 import com.example.financialtrackerapp.presentation.ui.theme.White
 import com.example.financialtrackerapp.presentation.ui.theme.poppinsFontFamily
+import java.util.Calendar
 
 @Composable
 fun TripleChoiceButton(selectedType: TransactionType, onTypeSelected: (TransactionType) -> Unit) {
@@ -69,17 +73,17 @@ fun TripleChoiceButton(selectedType: TransactionType, onTypeSelected: (Transacti
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             ButtonTemplate(
-                textLabel = "Income",
+                textLabel = "Доход",
                 isSelected = selectedType == TransactionType.INCOME,
                 onClick = { onTypeSelected(TransactionType.INCOME) }
             )
             ButtonTemplate(
-                textLabel = "Expense",
+                textLabel = "Трата",
                 isSelected = selectedType == TransactionType.EXPENSE,
                 onClick = { onTypeSelected(TransactionType.EXPENSE) }
             )
             ButtonTemplate(
-                textLabel = "Transfer",
+                textLabel = "Перевод",
                 isSelected = selectedType == TransactionType.TRANSFER,
                 onClick = { onTypeSelected(TransactionType.TRANSFER) }
             )
@@ -117,34 +121,6 @@ fun ButtonTemplate(
     }
 }
 
-/*@Composable
-fun CloseButton(onClick: () -> Unit) {
-    IconButton(
-        onClick = onClick,
-        modifier = Modifier.padding(top = 6.dp)
-    ) {
-        Icon(
-            painter = painterResource(R.drawable.ic_close),
-            contentDescription = "Close tab",
-            tint = Color.Unspecified
-        )
-    }
-}
-
-@Composable
-fun AddButton(onClick: () -> Unit) {
-    IconButton(
-        onClick = onClick,
-        modifier = Modifier.padding(top = 6.dp)
-    ) {
-        Icon(
-            painter = painterResource(R.drawable.ic_add),
-            contentDescription = "Add transaction",
-            tint = Color.Unspecified
-        )
-    }
-}*/
-
 @Composable
 fun ExpenseParameters(
     state: NewTransactionViewModel.TransactionState,
@@ -153,6 +129,7 @@ fun ExpenseParameters(
     onCategoryChange: (Category) -> Unit,
     onNoteChange: (String) -> Unit,
     onPlaceChange: (String) -> Unit,
+    onDateChange: (String) -> Unit,
     onSubmit: () -> Unit,
 ) {
     Column(
@@ -160,13 +137,13 @@ fun ExpenseParameters(
         verticalArrangement = Arrangement.SpaceAround,
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        MoneyInputField(amount = state.amount, currency = currency , onAmountChange = onAmountChange)
+        MoneyInputField(amount = state.amount, currency = currency, onAmountChange = onAmountChange)
         CategoryDropdown(selectedCategory = state.category, onCategoryChange = onCategoryChange)
         NoteInputField(note = state.note, onNoteChange = onNoteChange)
-        DateInputField(date = state.date)
+        DateInputField(date = state.date, label = "Дата", onDateChange)
         PlaceInputField(place = state.place, onPlaceChange = onPlaceChange)
         Spacer(modifier = Modifier.weight(1f))
-        SubmissionButton(title = "Save Operation", onClick = onSubmit)
+        SubmissionButton(title = "Сохранить", onClick = onSubmit)
         Spacer(modifier = Modifier.size(32.dp))
     }
 }
@@ -178,6 +155,7 @@ fun IncomeParameters(
     onAmountChange: (String) -> Unit,
     onCategoryChange: (Category) -> Unit,
     onNoteChange: (String) -> Unit,
+    onDateChange: (String) -> Unit,
     onSubmit: () -> Unit,
 ) {
     Column(
@@ -185,12 +163,12 @@ fun IncomeParameters(
         verticalArrangement = Arrangement.SpaceAround,
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        MoneyInputField(amount = state.amount, currency = currency , onAmountChange = onAmountChange)
+        MoneyInputField(amount = state.amount, currency = currency, onAmountChange = onAmountChange)
         CategoryDropdown(selectedCategory = state.category, onCategoryChange = onCategoryChange)
         NoteInputField(note = state.note, onNoteChange = onNoteChange)
-        DateInputField(date = state.date)
+        DateInputField(date = state.date, label = "Дата", onDateChange)
         Spacer(modifier = Modifier.weight(1f))
-        SubmissionButton("Save Operation", onClick = onSubmit)
+        SubmissionButton("Сохранить", onClick = onSubmit)
         Spacer(modifier = Modifier.size(32.dp))
     }
 }
@@ -201,6 +179,7 @@ fun TransferParameters(
     currency: Currency,
     onAmountChange: (String) -> Unit,
     onNoteChange: (String) -> Unit,
+    onDateChange: (String) -> Unit,
     onSubmit: () -> Unit,
 ) {
     Column(
@@ -208,11 +187,11 @@ fun TransferParameters(
         verticalArrangement = Arrangement.SpaceAround,
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        MoneyInputField(amount = state.amount,currency = currency, onAmountChange = onAmountChange)
+        MoneyInputField(amount = state.amount, currency = currency, onAmountChange = onAmountChange)
         NoteInputField(note = state.note, onNoteChange = onNoteChange)
-        DateInputField(date = state.date)
+        DateInputField(date = state.date, label = "Дата", onDateChange)
         Spacer(modifier = Modifier.weight(1f))
-        SubmissionButton("Save Operation", onClick = onSubmit)
+        SubmissionButton("Сохранить", onClick = onSubmit)
         Spacer(modifier = Modifier.size(32.dp))
     }
 }
@@ -272,7 +251,7 @@ fun NoteInputField(note: String, onNoteChange: (String) -> Unit) {
         ),
         prefix = {
             Text(
-                text = "Note",
+                text = "Заметка",
                 fontFamily = poppinsFontFamily,
                 fontWeight = FontWeight.SemiBold,
                 fontSize = 22.sp,
@@ -303,9 +282,33 @@ fun NoteInputField(note: String, onNoteChange: (String) -> Unit) {
 }
 
 @Composable
-fun DateInputField(date: String) {
+fun DateInputField(date: String, label: String, onDateSelected: (String) -> Unit) {
+    val showDialog = remember { mutableStateOf(false) }
+    val context = LocalContext.current
+    val calendar = remember { Calendar.getInstance() }
+
+    if (showDialog.value) {
+        DatePickerDialog(
+            context,
+            R.style.CustomDatePickerDialogTheme,
+            { _, year, month, day ->
+                calendar.set(year, month, day)
+                onDateSelected(formatTransactionDate(calendar.timeInMillis))
+                showDialog.value = false
+            },
+            calendar.get(Calendar.YEAR),
+            calendar.get(Calendar.MONTH),
+            calendar.get(Calendar.DAY_OF_MONTH)
+        ).show()
+    }
+
     OutlinedTextField(
         value = date,
+        onValueChange = {},
+        enabled = false,
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable { showDialog.value = true },
         textStyle = TextStyle(
             fontSize = 18.sp,
             fontFamily = poppinsFontFamily,
@@ -315,20 +318,18 @@ fun DateInputField(date: String) {
         ),
         prefix = {
             Text(
-                text = "Date",
+                text = label,
                 fontFamily = poppinsFontFamily,
                 fontWeight = FontWeight.SemiBold,
                 fontSize = 22.sp,
                 color = White
             )
         },
-        onValueChange = {},
         keyboardOptions = KeyboardOptions(
             keyboardType = KeyboardType.Number,
             imeAction = ImeAction.Done
         ),
         singleLine = true,
-        readOnly = true,
         colors = OutlinedTextFieldDefaults.colors(
             focusedContainerColor = Color.Transparent,
             unfocusedContainerColor = Color.Transparent,
@@ -338,8 +339,7 @@ fun DateInputField(date: String) {
             unfocusedBorderColor = Color.Transparent,
             disabledBorderColor = Color.Transparent,
             errorBorderColor = Color.Transparent,
-        ),
-        modifier = Modifier.fillMaxWidth()
+        )
     )
 
     Divisor()
@@ -359,7 +359,7 @@ fun PlaceInputField(place: String, onPlaceChange: (String) -> Unit) {
         onValueChange = onPlaceChange,
         prefix = {
             Text(
-                text = "Place",
+                text = "Место",
                 fontFamily = poppinsFontFamily,
                 fontWeight = FontWeight.SemiBold,
                 fontSize = 22.sp,
@@ -446,7 +446,7 @@ fun CategoryDropdown(selectedCategory: Category, onCategoryChange: (Category) ->
             },
             prefix = {
                 Text(
-                    text = "Category",
+                    text = "Категория",
                     fontFamily = poppinsFontFamily,
                     fontWeight = FontWeight.SemiBold,
                     fontSize = 22.sp,
@@ -550,7 +550,7 @@ fun InitialBalanceInputField(balance: Double, onBalanceChange: (String) -> Unit)
         ),
         prefix = {
             Text(
-                text = "Initial Balance",
+                text = "Начальный баланс",
                 fontFamily = poppinsFontFamily,
                 fontWeight = FontWeight.SemiBold,
                 fontSize = 20.sp,
@@ -609,7 +609,7 @@ fun CurrencyDropdown(
             ),
             prefix = {
                 Text(
-                    text = "Currency",
+                    text = "Валюта",
                     fontFamily = poppinsFontFamily,
                     fontWeight = FontWeight.SemiBold,
                     fontSize = 20.sp,
@@ -670,7 +670,7 @@ fun NameInputField(name: String, onNameChange: (String) -> Unit) {
         ),
         prefix = {
             Text(
-                text = "Name",
+                text = "Название",
                 fontFamily = poppinsFontFamily,
                 fontWeight = FontWeight.SemiBold,
                 fontSize = 20.sp,
@@ -736,7 +736,7 @@ fun AccountTypeDropdown(accountType: AccountType, onTypeChange: (AccountType) ->
             },
             prefix = {
                 Text(
-                    text = "Type",
+                    text = "Тип счёта",
                     fontFamily = poppinsFontFamily,
                     fontWeight = FontWeight.SemiBold,
                     fontSize = 20.sp,
@@ -779,3 +779,100 @@ fun AccountTypeDropdown(accountType: AccountType, onTypeChange: (AccountType) ->
         }
     }
 }
+
+@Composable
+fun SpecialAmountInputField(
+    label: String,
+    showDivisor: Boolean,
+    amount: Double,
+    onAmountChange: (String) -> Unit
+) {
+    Divisor()
+    OutlinedTextField(
+        value = formatNumber(amount),
+        textStyle = TextStyle(
+            fontSize = 20.sp,
+            fontFamily = poppinsFontFamily,
+            fontWeight = FontWeight.SemiBold,
+            color = White,
+            textAlign = TextAlign.End,
+        ),
+        onValueChange = onAmountChange,
+        keyboardOptions = KeyboardOptions(
+            keyboardType = KeyboardType.Number,
+            imeAction = ImeAction.Done
+        ),
+        prefix = {
+            Text(
+                text = label,
+                fontFamily = poppinsFontFamily,
+                fontWeight = FontWeight.SemiBold,
+                fontSize = 20.sp,
+                color = White
+            )
+        },
+        singleLine = true,
+        colors = OutlinedTextFieldDefaults.colors(
+            focusedContainerColor = Color.Transparent,
+            unfocusedContainerColor = Color.Transparent,
+            disabledContainerColor = Color.Transparent,
+            errorContainerColor = Color.Transparent,
+            focusedBorderColor = Color.Transparent,
+            unfocusedBorderColor = Color.Transparent,
+            disabledBorderColor = Color.Transparent,
+            errorBorderColor = Color.Transparent,
+        ),
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(height = 58.dp)
+    )
+
+    if (showDivisor) {
+        Divisor()
+    }
+}
+
+/*@Composable
+fun AmountInputField(label: String, amount: Double, onAmountChange: (String) -> Unit) {
+    Divisor()
+    OutlinedTextField(
+        value = formatNumber(amount),
+        textStyle = TextStyle(
+            fontSize = 20.sp,
+            fontFamily = poppinsFontFamily,
+            fontWeight = FontWeight.SemiBold,
+            color = White,
+            textAlign = TextAlign.End,
+        ),
+        onValueChange = onAmountChange,
+        keyboardOptions = KeyboardOptions(
+            keyboardType = KeyboardType.Number,
+            imeAction = ImeAction.Done
+        ),
+        prefix = {
+            Text(
+                text = label,
+                fontFamily = poppinsFontFamily,
+                fontWeight = FontWeight.SemiBold,
+                fontSize = 20.sp,
+                color = White
+            )
+        },
+        singleLine = true,
+        colors = OutlinedTextFieldDefaults.colors(
+            focusedContainerColor = Color.Transparent,
+            unfocusedContainerColor = Color.Transparent,
+            disabledContainerColor = Color.Transparent,
+            errorContainerColor = Color.Transparent,
+            focusedBorderColor = Color.Transparent,
+            unfocusedBorderColor = Color.Transparent,
+            disabledBorderColor = Color.Transparent,
+            errorBorderColor = Color.Transparent,
+        ),
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(height = 58.dp)
+    )
+
+    Divisor()
+}*/

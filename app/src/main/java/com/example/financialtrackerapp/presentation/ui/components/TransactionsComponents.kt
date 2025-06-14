@@ -11,16 +11,12 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.State
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -52,7 +48,7 @@ fun BalanceBox(currentBalance: Double, currency: Currency, modifier: Modifier = 
                 .padding(vertical = 8.dp)
         ) {
             Text(
-                text = "Total Balance",
+                text = "Общий баланс",
                 fontSize = 20.sp,
                 fontFamily = poppinsFontFamily,
                 fontWeight = FontWeight.Medium,
@@ -94,7 +90,7 @@ fun IncomeBox(incomeAmount: Double, currency: Currency) {
             )
 
             Text(
-                text = "Income", fontSize = 18.sp,
+                text = "Доходы", fontSize = 18.sp,
                 fontFamily = poppinsFontFamily,
                 fontWeight = FontWeight.Medium,
                 color = White
@@ -137,7 +133,7 @@ fun ExpenseBox(expenseAmount: Double, currency: Currency) {
             )
 
             Text(
-                text = "Expense", fontSize = 18.sp,
+                text = "Расходы", fontSize = 18.sp,
                 fontFamily = poppinsFontFamily,
                 fontWeight = FontWeight.Medium,
                 color = White
@@ -199,7 +195,7 @@ fun TransactionsList(transactionsList: List<Transaction>, currency: Currency) {
 
                             Text(
                                 modifier = Modifier.padding(start = 3.dp),
-                                text = categoryToTitle(transaction.category),
+                                text = categoryToRTitle(transaction.category),
                                 fontSize = 18.sp,
                                 fontFamily = poppinsFontFamily,
                                 fontWeight = FontWeight.Medium,

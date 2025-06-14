@@ -77,7 +77,11 @@ fun PieChartView(
 
                 setOnChartValueSelectedListener(object : OnChartValueSelectedListener {
                     override fun onValueSelected(e: Entry?, h: Highlight?) {
-                        Toast.makeText(context, "You chose: ${(e as? PieEntry)?.label}", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(
+                            context,
+                            "You chose: ${(e as? PieEntry)?.label}",
+                            Toast.LENGTH_SHORT
+                        ).show()
                     }
 
                     override fun onNothingSelected() {}
@@ -145,7 +149,11 @@ fun BarChartView(
 
                 setOnChartValueSelectedListener(object : OnChartValueSelectedListener {
                     override fun onValueSelected(e: Entry?, h: Highlight?) {
-                        Toast.makeText(context, "You chose: ${(e as? BarEntry)?.x}", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(
+                            context,
+                            "You chose: ${(e as? BarEntry)?.x}",
+                            Toast.LENGTH_SHORT
+                        ).show()
                     }
 
                     override fun onNothingSelected() {}
@@ -195,13 +203,16 @@ fun ToggleTransactionTypeButton(
     ) {
         Row(
             modifier = Modifier
-                .background(if (isExpense) SpecificOrange else SecondaryBackground, shape = RoundedCornerShape(22.dp))
+                .background(
+                    if (isExpense) SpecificOrange else SecondaryBackground,
+                    shape = RoundedCornerShape(22.dp)
+                )
                 .padding(horizontal = 16.dp, vertical = 6.dp),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             Text(
-                text = if (isExpense) "Expenses" else "Incomes",
+                text = if (isExpense) "Расходы" else "Доходы",
                 fontSize = 14.sp,
                 fontFamily = poppinsFontFamily,
                 fontWeight = FontWeight.Medium,

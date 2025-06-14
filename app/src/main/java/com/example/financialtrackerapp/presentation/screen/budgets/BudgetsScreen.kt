@@ -15,6 +15,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -25,6 +28,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.financialtrackerapp.R
+import com.example.financialtrackerapp.domain.model.enums.Currency
+import com.example.financialtrackerapp.presentation.screen.dialogues.aim.AimDialog
+import com.example.financialtrackerapp.presentation.screen.dialogues.budget.BudgetDialog
+import com.example.financialtrackerapp.presentation.screen.main.GlobalViewModel
 import com.example.financialtrackerapp.presentation.ui.components.AddButton
 import com.example.financialtrackerapp.presentation.ui.components.AimsBox
 import com.example.financialtrackerapp.presentation.ui.components.BudgetsList
@@ -35,8 +42,16 @@ import com.example.financialtrackerapp.presentation.ui.theme.White
 import com.example.financialtrackerapp.presentation.ui.theme.poppinsFontFamily
 
 @Composable
-fun BudgetsScreen(budgetsViewModel: BudgetsViewModel = hiltViewModel()) {
+fun BudgetsScreen(
+    budgetsViewModel: BudgetsViewModel = hiltViewModel(),
+    globalViewModel: GlobalViewModel
+) {
     val budgetsState by budgetsViewModel.budgetsState.collectAsState()
+    val globalState by globalViewModel.globalState.collectAsState()
+
+    var showAimDialog by remember { mutableStateOf(false) }
+    var showBudgetDialog by remember { mutableStateOf(false) }
+    var filterState by remember { mutableStateOf(false) }
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
@@ -48,7 +63,11 @@ fun BudgetsScreen(budgetsViewModel: BudgetsViewModel = hiltViewModel()) {
                     .padding(top = paddingValues.calculateTopPadding()),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                AimsBox(aimList = budgetsState.aims)
+                AimsBox(
+                    aimList = budgetsState.aims,
+                    onClick = { showAimDialog = true },
+                    currency = globalState.currentAccount?.currency ?: Currency.RUB
+                )
 
                 Column(
                     modifier = Modifier
@@ -60,7 +79,7 @@ fun BudgetsScreen(budgetsViewModel: BudgetsViewModel = hiltViewModel()) {
                     verticalArrangement = Arrangement.Top
                 ) {
                     Text(
-                        text = "Budgets",
+                        text = "Бюджеты",
                         color = White,
                         fontFamily = poppinsFontFamily,
                         fontWeight = FontWeight.Medium,
@@ -74,8 +93,13 @@ fun BudgetsScreen(budgetsViewModel: BudgetsViewModel = hiltViewModel()) {
                         verticalAlignment = Alignment.Top,
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
-                        FilterButton { }
-                        AddButton(true) { }
+                        FilterButton {
+                            budgetsViewModel.filter(filterState)
+                            filterState = !filterState
+                        }
+                        AddButton(true) {
+                            showBudgetDialog = true
+                        }
                     }
 
                     Icon(
@@ -85,59 +109,17 @@ fun BudgetsScreen(budgetsViewModel: BudgetsViewModel = hiltViewModel()) {
                         tint = Color.White,
                     )
 
-                    BudgetsList(budgetsList = budgetsState.budgets)
+                    BudgetsList(budgetsList = budgetsState.budgets, currency = globalState.currentAccount?.currency ?: Currency.RUB )
                 }
             }
         }
     )
+
+    if (showBudgetDialog) {
+        BudgetDialog(onDismiss = { showBudgetDialog = false })
+    }
+
+    if (showAimDialog) {
+        AimDialog(onDismiss = { showAimDialog = false })
+    }
 }
-
-/*
-val testAims = listOf(
-    Aim(
-        id = 1,
-        accountId = 101,
-        name = "New phone",
-        targetAmount = 1000.0,
-        savedAmount = 856.0
-    )
-)
-
-val testBudgets = listOf(
-    Budget(
-        id = 1L,
-        accountId = 101L,
-        category = Category.PRODUCTS,
-        spentAmount = 290.0,
-        limitAmount = 300.0,
-        startDate = 1719830400000,
-        endDate = 1722422400000
-    ),
-    Budget(
-        id = 2L,
-        accountId = 101L,
-        category = Category.ENTERTAINMENTS,
-        spentAmount = 100.0,
-        limitAmount = 150.0,
-        startDate = 1719830400000,
-        endDate = 1722422400000
-    ),
-    Budget(
-        id = 3L,
-        accountId = 101L,
-        category = Category.PUBLIC_TRANSPORT,
-        spentAmount = 20.0,
-        limitAmount = 100.0,
-        startDate = 1719830400000,
-        endDate = 1722422400000
-    ),
-    Budget(
-        id = 4L,
-        accountId = 101L,
-        category = Category.MEDICINE,
-        spentAmount = 100.0,
-        limitAmount = 200.0,
-        startDate = 1719830400000,
-        endDate = 1722422400000
-    )
-)*/

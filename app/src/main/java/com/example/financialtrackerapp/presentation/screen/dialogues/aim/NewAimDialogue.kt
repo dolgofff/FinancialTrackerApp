@@ -1,4 +1,4 @@
-package com.example.financialtrackerapp.presentation.screen.dialogues.account
+package com.example.financialtrackerapp.presentation.screen.dialogues.aim
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -23,11 +24,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.example.financialtrackerapp.presentation.screen.main.GlobalViewModel
-import com.example.financialtrackerapp.presentation.ui.components.AccountTypeDropdown
-import com.example.financialtrackerapp.presentation.ui.components.CurrencyDropdown
-import com.example.financialtrackerapp.presentation.ui.components.InitialBalanceInputField
 import com.example.financialtrackerapp.presentation.ui.components.NameInputField
+import com.example.financialtrackerapp.presentation.ui.components.SpecialAmountInputField
 import com.example.financialtrackerapp.presentation.ui.components.SubmissionButton
 import com.example.financialtrackerapp.presentation.ui.components.parseFormattedNumber
 import com.example.financialtrackerapp.presentation.ui.theme.BottomBarColor
@@ -35,23 +33,22 @@ import com.example.financialtrackerapp.presentation.ui.theme.White
 import com.example.financialtrackerapp.presentation.ui.theme.poppinsFontFamily
 
 @Composable
-fun NewAccountDialogue(
+fun AimDialog(
     onDismiss: () -> Unit,
-    newAccountViewModel: NewAccountViewModel = hiltViewModel(),
-    globalViewModel: GlobalViewModel,
+    aimViewModel: NewAimViewModel = hiltViewModel(),
 ) {
-    val accountState by newAccountViewModel.accountState.collectAsState()
+    val aimState by aimViewModel.aimState.collectAsState()
 
     Dialog(
         onDismissRequest = {
-            newAccountViewModel.resetState()
+            aimViewModel.clear()
             onDismiss()
         }) {
 
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(500.dp)
+                .height(440.dp)
                 .clip(RoundedCornerShape(46.dp))
                 .background(BottomBarColor),
             contentAlignment = Alignment.TopCenter
@@ -59,12 +56,14 @@ fun NewAccountDialogue(
             Text(
                 modifier = Modifier
                     .padding(top = 4.dp, bottom = 12.dp),
-                text = "Новый счёт",
+                text = "Новая цель",
                 fontSize = 24.sp,
                 fontFamily = poppinsFontFamily,
                 fontWeight = FontWeight.SemiBold,
                 color = White,
             )
+
+            Spacer(modifier = Modifier.width(14.dp))
 
             Column(
                 modifier = Modifier.align(Alignment.Center),
@@ -72,23 +71,26 @@ fun NewAccountDialogue(
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
                 NameInputField(
-                    name = accountState.name,
-                    onNameChange = { newAccountViewModel.updateName(it) })
+                    name = aimState.name,
+                    onNameChange = { aimViewModel.updateName(it) })
 
-                AccountTypeDropdown(
-                    accountType = accountState.type,
-                    onTypeChange = { newAccountViewModel.updateType(it) })
+                SpecialAmountInputField(
+                    label = "Сумма",
+                    showDivisor = false,
+                    amount = aimState.targetAmount,
+                    onAmountChange = {
+                        aimViewModel.updateTargetAmount(
+                            parseFormattedNumber(it)
+                        )
+                    }
+                )
 
-                CurrencyDropdown(
-                    selectedCurrency = accountState.currency,
-                    onCurrencyChange = {
-                        newAccountViewModel.updateCurrency(it)
-                    })
-
-                InitialBalanceInputField(
-                    balance = accountState.initialBalance,
-                    onBalanceChange = {
-                        newAccountViewModel.updateInitialBalance(
+                SpecialAmountInputField(
+                    label = "Сохранено",
+                    showDivisor = true,
+                    amount = aimState.savedAmount,
+                    onAmountChange = {
+                        aimViewModel.updateSavedAmount(
                             parseFormattedNumber(it)
                         )
                     }
@@ -97,22 +99,19 @@ fun NewAccountDialogue(
                 Spacer(modifier = Modifier.size(72.dp))
 
                 SubmissionButton(
-                    title = "Создать счёт",
+                    title = "Создать цель",
                     onClick = {
-                        newAccountViewModel.createNewAccount()
+                        aimViewModel.createAim()
                     }
                 )
             }
         }
     }
 
-    LaunchedEffect(accountState.isCreated) {
-        if (accountState.isCreated) {
-            accountState.id?.let { id ->
-                globalViewModel.updateCurrentAccount(id)
-                newAccountViewModel.clear()
-                onDismiss()
-            }
+    LaunchedEffect(aimState.isCreated) {
+        if (aimState.isCreated) {
+            aimViewModel.clear()
+            onDismiss()
         }
     }
 }

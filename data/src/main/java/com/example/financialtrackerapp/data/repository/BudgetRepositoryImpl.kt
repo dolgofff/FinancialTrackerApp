@@ -4,8 +4,8 @@ import android.database.sqlite.SQLiteConstraintException
 import com.example.financialtrackerapp.data.dao.BudgetDao
 import com.example.financialtrackerapp.data.mapper.toDomain
 import com.example.financialtrackerapp.data.mapper.toEntity
-import com.example.financialtrackerapp.domain.model.Aim
 import com.example.financialtrackerapp.domain.model.Budget
+import com.example.financialtrackerapp.domain.model.enums.Category
 import com.example.financialtrackerapp.domain.repository.BudgetRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -38,5 +38,9 @@ class BudgetRepositoryImpl(private val budgetDao: BudgetDao) : BudgetRepository 
 
     override fun getAll(accountId: Long): Flow<List<Budget>> {
         return budgetDao.getAccountsBudgets(accountId).map { list -> list.map { it.toDomain() } }
+    }
+
+    override suspend fun getByCategory(category: Category): Budget? {
+        return budgetDao.getBudgetByCategory(category.name)?.toDomain()
     }
 }

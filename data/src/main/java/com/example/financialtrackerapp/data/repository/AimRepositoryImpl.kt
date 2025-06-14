@@ -2,7 +2,6 @@ package com.example.financialtrackerapp.data.repository
 
 import android.database.sqlite.SQLiteConstraintException
 import com.example.financialtrackerapp.data.dao.AimDao
-import com.example.financialtrackerapp.data.entity.AimEntity
 import com.example.financialtrackerapp.data.mapper.toDomain
 import com.example.financialtrackerapp.data.mapper.toEntity
 import com.example.financialtrackerapp.domain.model.Aim

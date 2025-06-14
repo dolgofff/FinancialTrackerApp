@@ -1,4 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <style name="Theme.FinancialTrackerApp" parent="android:Theme.Material.Light.NoActionBar" />
+
+    <style name="Theme.FinancialTrackerApp" parent="Theme.MaterialComponents.Light.NoActionBar" />
+
+    <style name="CustomDatePickerDialogTheme" parent="Theme.MaterialComponents.Dialog">
+        <item name="colorAccent">@color/specific_orange</item>
+        <item name="android:datePickerStyle">@style/CustomDatePicker</item>
+        <item name="android:background">@color/main_background</item>
+    </style>
+
+    <style name="CustomDatePicker" parent="android:Widget.Material.DatePicker">
+        <item name="android:textColorPrimary">@color/main_background</item>
+        <item name="android:background">@color/main_background</item>
+    </style>
+
 </resources>
