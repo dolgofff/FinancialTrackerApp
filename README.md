@@ -56,9 +56,11 @@
 |----------------|-------------------|-------------------|
 | ![Splash](screenshots/splash_screen.png) | ![Authentication](screenshots/auth_screen.png) | ![Registration](screenshots/registration_screen.png) |
 
+
 | Создание счёта | Добавление операции | Экран транзакций |
 |----------------|---------------------|------------------|
 | ![Account](screenshots/account_screen.png) | ![Add](screenshots/menu_screen.png) | ![Transactions](screenshots/transactions_screen.png) |
+
 
 | Экран статистики | Экран бюджетов | Экран рекомендаций |
 |------------------|----------------|--------------------|
